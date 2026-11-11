@@ -1,0 +1,22 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template block_personalized_recommendation/sidebar
+
+    Shell for the Next Best Activity card. block_personalized_recommendation/sidebar (AMD)
+    fills [data-region="content"] from the web service.
+
+    Context variables required for this template:
+    * rootid - Unique element id for this block instance
+
+    Example context (json):
+    {
+        "rootid": "block-pr-12"
+    }
+}}
+<div id="{{rootid}}" class="block-pr" data-region="block-pr">
+    <h5 class="block-pr-heading">{{#str}} heading, block_personalized_recommendation {{/str}}</h5>
+    <div data-region="content" aria-live="polite" aria-busy="true">
+        <p class="text-muted mb-0">{{#str}} loading, block_personalized_recommendation {{/str}}</p>
+    </div>
+</div>
