@@ -1,0 +1,59 @@
+{{!
+    @template local_microlearning/heatmap
+
+    Share of correct answers per unit (rows) and dimension (columns); every cell prints its value.
+
+    Example context (json):
+{
+    "heatmap": {
+        "columns": [
+            {
+                "name": "Grammar"
+            }
+        ],
+        "rows": [
+            {
+                "name": "Unit 1",
+                "cells": [
+                    {
+                        "empty": false,
+                        "value": "75 %",
+                        "detail": "3/4 answered",
+                        "tooltip": "Grammar · Unit 1",
+                        "background": "#1c5cab",
+                        "color": "#ffffff"
+                    }
+                ]
+            }
+        ]
+    },
+    "ramplegend": [
+        {
+            "color": "#86b6ef",
+            "label": "0–20 %"
+        }
+    ]
+}
+}}
+{{#heatmap}}
+<table class="ml-heatmap table-reboot">
+    <thead><tr><th scope="col"></th>{{#columns}}<th scope="col">{{name}}</th>{{/columns}}</tr></thead>
+    <tbody>
+        {{#rows}}
+        <tr>
+            <th scope="row">{{name}}</th>
+            {{#cells}}
+            <td class="{{#empty}}ml-heat-empty{{/empty}}" {{^empty}}style="background: {{background}}; color: {{color}}"{{/empty}} title="{{tooltip}}">
+                <span class="ml-heat-value">{{value}}</span>
+                {{#detail}}<span class="ml-heat-detail">{{detail}}</span>{{/detail}}
+            </td>
+            {{/cells}}
+        </tr>
+        {{/rows}}
+    </tbody>
+</table>
+{{/heatmap}}
+<ul class="ml-legend ml-ramp">
+    {{#ramplegend}}<li><span class="ml-swatch" style="background: {{color}}"></span>{{label}}</li>{{/ramplegend}}
+    <li><span class="ml-swatch ml-heat-empty"></span>{{#str}} heat:none, local_microlearning {{/str}}</li>
+</ul>

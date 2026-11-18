@@ -1,0 +1,50 @@
+{{!
+    @template local_microlearning/topic_meter
+
+    One topic: name, level, a bar of the share of correct answers, the figure, links.
+
+    Example context (json):
+{
+    "name": "Present simple -s",
+    "dimension": "Grammar",
+    "unit": "Unit 1",
+    "badge": {
+        "level": "weak",
+        "name": "Weak",
+        "color": "#e34948"
+    },
+    "answered": true,
+    "width": 25,
+    "figure": "1 of 4 correct",
+    "last": "18/11/26",
+    "estimate": null,
+    "lesson": {
+        "name": "Lesson",
+        "url": "#"
+    },
+    "quiz": {
+        "name": "Quiz",
+        "url": "#"
+    }
+}
+}}
+<li class="ml-meter">
+    <div class="ml-meter-name">
+        <span class="ml-swatch ml-level-{{badge.level}}" style="background: {{badge.color}}"></span>
+        <span>{{name}}</span>
+        <span class="ml-muted">{{dimension}}{{#unit}} · {{unit}}{{/unit}}</span>
+        <span class="ml-levelname">{{badge.name}}</span>
+    </div>
+    <div class="ml-meter-row">
+        <div class="ml-meter-track">{{#answered}}<div class="ml-meter-fill" style="width: {{width}}%"></div>{{/answered}}</div>
+        <div class="ml-meter-figure">
+            {{#answered}}{{figure}}{{/answered}}
+            {{^answered}}{{#estimate}}<span class="badge bg-warning text-dark">{{#str}} basis:prediction, local_microlearning {{/str}}</span> {{#str}} predictedshort, local_microlearning, {{estimate}} {{/str}}{{/estimate}}{{^estimate}}{{#str}} notanswered, local_microlearning {{/str}}{{/estimate}}{{/answered}}
+        </div>
+    </div>
+    <div class="ml-meter-links ml-muted small">
+        {{#last}}<span>{{#str}} lastanswered, local_microlearning, {{last}} {{/str}}</span>{{/last}}
+        {{#lesson}}<a href="{{url}}">{{#str}} lesson, local_microlearning {{/str}}</a>{{/lesson}}
+        {{#quiz}}<a href="{{url}}">{{#str}} practisequiz, local_microlearning {{/str}}</a>{{/quiz}}
+    </div>
+</li>
