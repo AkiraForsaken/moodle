@@ -1,0 +1,228 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+
+/**
+ * English strings for local_microlearning.
+ *
+ * @package    local_microlearning
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['pluginname'] = 'Microlearning profiles';
+$string['microlearning:viewprofiles'] = 'View learner profiles and recommendations';
+
+$string['learnerprofiles'] = 'Learner profiles';
+$string['learnerprofile'] = 'Learner profile';
+$string['learner'] = 'Learner';
+$string['learners'] = 'Learners';
+$string['alllearners'] = 'All learners';
+$string['show'] = 'Show';
+$string['nosnapshot'] = 'No learner profiles have been imported for this course yet. Run the pipeline and "python -m moodle_sync push".';
+$string['noprofile'] = 'There is no profile for this learner in the current snapshot of this course.';
+$string['snapshotinfo'] = 'Snapshot generated {$a->generated}, imported {$a->imported}. Learners: {$a->learners}. Activity after the snapshot is not included.';
+$string['simulatedwarning'] = 'This snapshot contains simulated learners. Their profiles demonstrate the system and say nothing about real learners. Simulated learners are marked.';
+$string['population:simulated'] = 'simulated';
+$string['population:moodle_collector'] = 'real';
+
+$string['courseprogress'] = 'Course progress';
+$string['lastactive'] = 'Last active';
+$string['quizattempts'] = 'Quiz attempts';
+$string['completedactivities'] = 'Completed activities';
+$string['sessions'] = 'Learning sessions';
+$string['learningdays'] = 'Days with activity';
+$string['learningtime'] = 'Estimated learning time';
+$string['engagement'] = 'Engagement and history';
+
+$string['estimator'] = 'Knowledge estimate';
+$string['phase'] = 'Phase {$a->phase} ({$a->model})';
+$string['phase1'] = 'Knowledge estimates: Phase 1, BKT with fixed, uncalibrated parameters ({$a}). A topic without answers holds a prior shared by all new learners, not a judgement about this learner.';
+$string['phase2'] = 'Knowledge estimates: Phase 2, BKT ({$a}); a deep model has been trained for this course but has not replaced BKT.';
+$string['phase3'] = 'Knowledge estimates: Phase 3, deep knowledge-tracing model ({$a}) trained on this course\'s own answers.';
+$string['phaseunknown'] = 'No knowledge estimate is available for this learner.';
+
+$string['recommendations'] = 'Current recommendations';
+$string['norecommendations'] = 'No recommendation: the learner has no open activity in this course.';
+$string['reason'] = 'Reason';
+$string['basis'] = 'Basis';
+$string['evidence'] = 'Numbers behind it';
+$string['basis:evidence'] = 'The learner\'s answers';
+$string['basis:prediction'] = 'Model estimate';
+$string['basis:course_order'] = 'Course order';
+$string['missingactivity'] = 'Activity {$a} (no longer in the course)';
+
+$string['weakareas'] = 'Weak areas';
+$string['noweakareas'] = 'No concern is raised for this learner.';
+$string['weakkcs'] = 'Topics with the most difficulty';
+$string['weakkcs_help'] = 'Topics with the most learners at the weak level (at least 3 answers, fewer than 60 % correct). The bar is the share of the learners who answered the topic. Thresholds are configuration choices, not calibrated.';
+$string['noweakkcs'] = 'No knowledge component has an evidence-based concern.';
+$string['kc'] = 'Knowledge component';
+$string['unit'] = 'Unit';
+$string['dimension'] = 'Dimension';
+$string['skill'] = 'Skill';
+$string['answers'] = 'Answers';
+$string['learnerswithanswers'] = 'Learners with answers';
+$string['kcswithanswers'] = 'Components with answers';
+$string['evidenceconcerns'] = 'Concerns from answers';
+$string['predictionconcerns'] = 'Concerns from estimates';
+$string['meanaccuracy'] = 'Mean accuracy';
+$string['observedaccuracy'] = 'Correct answers';
+$string['predictedcorrectness'] = 'Predicted next answer';
+$string['knowledgebyskill'] = 'Knowledge by skill';
+$string['knowledgebyskill_help'] = '"Correct answers" is what the learner did. "Predicted next answer" is a model estimate of answering the next question correctly; it is not a mastery level.';
+
+$string['refreshenabled'] = 'Request per-learner refreshes';
+$string['refreshenabled_desc'] = 'Record a refresh request when a learner has worked through their recommended list (or one of the reasons below). The microlearning engine polls these requests and recomputes that learner only.';
+$string['engine'] = 'Microlearning engine';
+$string['engine_desc'] = 'The engine computes profiles and recommendations. When its URL is set, Moodle asks it to refresh a learner as soon as a refresh request is made (an ad hoc task, so no page waits) and rebuilds every course each night (scheduled task). Without a URL, requests wait for an engine worker that polls them.';
+$string['engineurl'] = 'Engine URL';
+$string['engineurl_desc'] = 'Base URL of the engine service, e.g. http://host.docker.internal:8010. Leave empty to rely on a polling worker.';
+$string['enginetoken'] = 'Engine token';
+$string['enginetoken_desc'] = 'Shared secret, the same value as the engine\'s API_TOKEN.';
+$string['enginetimeout'] = 'Engine timeout (seconds)';
+$string['enginetimeout_desc'] = 'How long one call may take. A full rebuild of a course takes a minute or more.';
+$string['errorengine'] = 'The microlearning engine could not be used: {$a}';
+$string['privacy:metadata:engine'] = 'To compute profiles and recommendations, the microlearning engine reads the course\'s activity data (read-only database access) and is asked to refresh named learners.';
+$string['privacy:metadata:engine:userid'] = 'The learner whose recommendations are refreshed';
+$string['privacy:metadata:engine:courseid'] = 'The course';
+$string['task:fullsync'] = 'Rebuild microlearning profiles and recommendations (engine)';
+$string['refreshonfail'] = 'Refresh after a failed quiz';
+$string['refreshonfail_desc'] = 'Also request a refresh when a learner submits a quiz attempt below its pass mark, so revision advice follows at once.';
+
+$string['level:strong'] = 'Strong';
+$string['level:developing'] = 'Developing';
+$string['level:weak'] = 'Weak';
+$string['level:started'] = 'Started';
+$string['level:not_assessed'] = 'Not answered yet';
+$string['levelsnote'] = 'Levels come from the learner\'s answers only: at least 3 answers per topic, weak below 60 % correct, strong from 80 %; 1–2 answers are "started". These are display categories with uncalibrated thresholds, not mastery.';
+$string['tile:assessed'] = 'Topics answered';
+$string['tile:correct'] = 'Correct answers';
+$string['tile:correct_detail'] = '{$a->correct} of {$a->answers} answers';
+$string['knowledgeoverview'] = 'Topics by level';
+$string['knowledgeoverview_help'] = 'Every knowledge component (topic) of the course, by the learner\'s level on it.';
+$string['bydimension'] = 'Skills';
+$string['bydimension_help'] = 'Mean share of correct answers per skill, over the topics the learner has answered. Grey: the mean of the other learners of the same kind (real or simulated) with answers, shown only with at least 5 of them.';
+$string['byunit'] = 'Units';
+$string['byunit_help'] = 'Mean share of correct answers per unit and skill. Hatched: nothing answered yet.';
+$string['heat:answered'] = '{$a->answered}/{$a->topics} topics';
+$string['heat:none'] = 'nothing answered yet';
+$string['heat:correct'] = 'correct';
+$string['topics'] = 'Topics of a unit';
+$string['units'] = 'Units';
+$string['unitn'] = 'Unit {$a}';
+$string['weaktopics'] = 'Weak topics';
+$string['weaktopics_help'] = 'At least 3 answers and fewer than 60 % correct, weakest first. The same rule drives the remediation recommendations.';
+$string['noweaktopics'] = 'No weak topic: no topic with at least 3 answers is below 60 % correct.';
+$string['estimatedconcerns'] = 'Estimated difficulties';
+$string['estimatedconcerns_help'] = 'Not answered (or fewer than 3 answers), but the knowledge model predicts a low chance of a correct answer. An estimate, not evidence.';
+$string['strengths'] = 'Strengths';
+$string['nostrengths'] = 'No topic is at the strong level yet (at least 3 answers, 80 % correct).';
+$string['quizscores'] = 'Quiz scores over time';
+$string['noattempts'] = 'No finished quiz attempt yet.';
+$string['noanswers'] = 'No answers yet.';
+$string['chart:learner'] = 'This learner';
+$string['chart:cohort'] = 'Other learners (mean)';
+$string['chart:percentcorrect'] = '% correct';
+$string['chart:score'] = 'Score';
+$string['chart:passmark'] = 'Pass mark';
+$string['chart:percentmarks'] = '% of the marks';
+$string['attemptn'] = 'attempt {$a}';
+$string['xofy'] = '{$a->correct} of {$a->answers} correct';
+$string['notanswered'] = 'Not answered yet';
+$string['predictedshort'] = 'next answer {$a}';
+$string['lastanswered'] = 'Last answered {$a}';
+$string['lesson'] = 'Lesson';
+$string['practisequiz'] = 'Practice quiz';
+$string['recommendationsnow'] = 'What the learner sees now';
+$string['nowstatus'] = 'Based on the learner\'s data up to {$a->refreshed}. Done since: {$a->done}; still in the learner\'s queue: {$a->left}.';
+$string['refreshpending'] = 'Refresh requested ({$a->reason}) at {$a->time}; the engine has not answered yet.';
+$string['reason:list_done'] = 'worked through the list';
+$string['reason:quiz_failed'] = 'failed a quiz';
+$string['reason:new_learner'] = 'newly enrolled';
+$string['fallbackreason'] = 'Next unfinished activity in the course.';
+$string['coursecomplete'] = 'Every activity of the course is complete.';
+$string['engagement_help'] = 'Participation, not knowledge.';
+
+$string['tile:withanswers'] = 'Learners with answers';
+$string['tile:withweak'] = 'Learners with a weak topic';
+$string['cohortlevels'] = 'All learners\' topics by level';
+$string['cohortlevels_help'] = 'Every learner x topic of the course, by level. Mostly "not answered yet" while learners are early in the course.';
+$string['cohortunits_help'] = 'Mean share of correct answers per unit and skill, over the learners who answered there; shown with at least 5 such learners. Hatched: fewer.';
+$string['heat:learners'] = '{$a} learners';
+$string['heat:toofew'] = 'fewer than {$a} learners with answers';
+$string['hardest:figure'] = '{$a->weak} of {$a->learners} learners weak';
+$string['hardest:mean'] = 'Mean correct among learners who answered: {$a}';
+$string['learnerlist_help'] = 'Learners with the most weak topics first. Open a learner for their full profile.';
+$string['weakestskill'] = 'Weakest skill';
+$string['refreshed'] = 'Data up to';
+$string['pendingbadge'] = 'refresh pending';
+
+$string['errorschema'] = 'Unsupported bundle format version: {$a}';
+$string['errorkind'] = 'This import expects another kind of bundle (got: {$a})';
+$string['errornosnapshotforupdate'] = 'A learner update needs an active snapshot of the course; import a full snapshot first';
+$string['errormappingchanged'] = 'The learner update was made for question mapping {$a->bundle}, the active snapshot for {$a->snapshot}; run a full pipeline instead';
+$string['errorcourse'] = 'The bundle is for course {$a->bundle}, not course {$a->course}';
+$string['errorusers'] = 'The bundle names users that do not exist: {$a}';
+$string['errormodules'] = 'The bundle recommends activities that are not in this course (was the course rebuilt?): {$a}';
+$string['errororphan'] = 'The bundle has rows for user {$a} without a profile';
+$string['errormissingfile'] = 'Bundle file missing or unreadable: {$a}';
+$string['errormanifest'] = 'Invalid bundle manifest: {$a}';
+$string['errorchecksum'] = 'Checksum mismatch for bundle file {$a}';
+$string['errorcsv'] = 'Malformed bundle file {$a}';
+
+$string['privacy:metadata:userid'] = 'The user the row describes';
+$string['privacy:metadata:courseid'] = 'The course the row belongs to';
+$string['privacy:metadata:local_microlearning_profile'] = 'A learner\'s profile in a course: knowledge estimator, engagement and history figures';
+$string['privacy:metadata:local_microlearning_profile:population'] = 'Whether the account is a real or a simulated learner';
+$string['privacy:metadata:local_microlearning_profile:knowledgephase'] = 'Phase of the knowledge estimator used';
+$string['privacy:metadata:local_microlearning_profile:knowledgemodel'] = 'Name of the knowledge estimator used';
+$string['privacy:metadata:local_microlearning_profile:sessioncount'] = 'Number of learning sessions';
+$string['privacy:metadata:local_microlearning_profile:learningseconds'] = 'Estimated learning time in seconds';
+$string['privacy:metadata:local_microlearning_profile:completedactivities'] = 'Number of completed activities';
+$string['privacy:metadata:local_microlearning_profile:courseprogress'] = 'Share of the course\'s activities completed';
+$string['privacy:metadata:local_microlearning_profile:lastactive'] = 'Time of the last recorded activity';
+$string['privacy:metadata:local_microlearning_profile:quizattempts'] = 'Number of finished quiz attempts';
+$string['privacy:metadata:local_microlearning_profile:learningdays'] = 'Number of days with activity';
+$string['privacy:metadata:local_microlearning_kcstate'] = 'A learner\'s estimated knowledge of one knowledge component';
+$string['privacy:metadata:local_microlearning_kcstate:kcid'] = 'Identifier of the knowledge component';
+$string['privacy:metadata:local_microlearning_kcstate:kcname'] = 'Name of the knowledge component';
+$string['privacy:metadata:local_microlearning_kcstate:attemptcount'] = 'Number of graded answers on the component';
+$string['privacy:metadata:local_microlearning_kcstate:observedaccuracy'] = 'Share of those answers that were correct';
+$string['privacy:metadata:local_microlearning_kcstate:predictedcorrectness'] = 'Estimated probability of answering the next question correctly';
+$string['privacy:metadata:local_microlearning_kcstate:concernstatus'] = 'Whether the component is flagged as a weak area, and on what basis';
+$string['privacy:metadata:local_microlearning_kcstate:reason'] = 'Explanation of the flag';
+$string['privacy:metadata:local_microlearning_skill'] = 'A learner\'s knowledge summarised per skill';
+$string['privacy:metadata:local_microlearning_skill:skillname'] = 'Name of the skill';
+$string['privacy:metadata:local_microlearning_skill:meanpredicted'] = 'Mean estimated probability of a correct next answer';
+$string['privacy:metadata:local_microlearning_skill:meanobserved'] = 'Mean share of correct answers';
+$string['privacy:metadata:local_microlearning_skill:attemptcount'] = 'Number of graded answers in the skill';
+$string['privacy:metadata:local_microlearning_kcstate:knowledgelevel'] = 'Display category of the learner\'s answers on the component (strong, developing, weak, started, not assessed)';
+$string['privacy:metadata:local_microlearning_kcstate:correctcount'] = 'Number of correct answers on the component';
+$string['privacy:metadata:local_microlearning_kcstate:lastattempt'] = 'Time of the last answer on the component';
+$string['privacy:metadata:local_microlearning_skill:weakcount'] = 'Number of the skill\'s components at the weak level';
+$string['privacy:metadata:local_microlearning_dim'] = 'A learner\'s knowledge summarised per dimension (grammar, vocabulary, ...)';
+$string['privacy:metadata:local_microlearning_dim:dimension'] = 'Name of the dimension';
+$string['privacy:metadata:local_microlearning_dim:meanobserved'] = 'Mean share of correct answers';
+$string['privacy:metadata:local_microlearning_dim:meanpredicted'] = 'Mean estimated probability of a correct next answer';
+$string['privacy:metadata:local_microlearning_dim:attemptcount'] = 'Number of graded answers in the dimension';
+$string['privacy:metadata:local_microlearning_attempt'] = 'A learner\'s finished quiz attempts, as shown on the profile';
+$string['privacy:metadata:local_microlearning_attempt:cmid'] = 'The quiz';
+$string['privacy:metadata:local_microlearning_attempt:timefinish'] = 'When the attempt was finished';
+$string['privacy:metadata:local_microlearning_attempt:score'] = 'Share of the marks obtained';
+$string['privacy:metadata:local_microlearning_attempt:passed'] = 'Whether the attempt reached the pass mark';
+$string['privacy:metadata:local_microlearning_refresh'] = 'Requests to recompute a learner\'s recommendations';
+$string['privacy:metadata:local_microlearning_refresh:reason'] = 'Why the refresh was requested';
+$string['privacy:metadata:local_microlearning_refresh:timecreated'] = 'When the refresh was requested';
+$string['privacy:metadata:local_microlearning_refresh:timeprocessed'] = 'When the refresh was imported';
+$string['privacy:metadata:local_microlearning_profile:timerefreshed'] = 'When the learner\'s data was last read by the pipeline';
+$string['privacy:metadata:local_microlearning_rec'] = 'Activities recommended to a learner';
+$string['privacy:metadata:local_microlearning_rec:recrank'] = 'Position in the learner\'s list';
+$string['privacy:metadata:local_microlearning_rec:recgroup'] = 'Whether the item is remediation, preparation or the next step in the course';
+$string['privacy:metadata:local_microlearning_rec:triggercmid'] = 'The quiz whose failure shows this recommendation';
+$string['privacy:metadata:local_microlearning_rec:cmid'] = 'The recommended activity';
+$string['privacy:metadata:local_microlearning_rec:kcid'] = 'The knowledge component the recommendation is about';
+$string['privacy:metadata:local_microlearning_rec:reasoncode'] = 'Rule that produced the recommendation';
+$string['privacy:metadata:local_microlearning_rec:reasontext'] = 'Reason shown to the learner';
+$string['privacy:metadata:local_microlearning_rec:basis'] = 'Whether it rests on answers, a model estimate or course order';
+$string['privacy:metadata:local_microlearning_rec:evidence'] = 'The figures behind the reason';

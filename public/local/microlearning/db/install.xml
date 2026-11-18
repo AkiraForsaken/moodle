@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/microlearning/db" VERSION="20261118" COMMENT="Learner profiles and recommendations imported from the microlearning pipeline"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="local_microlearning_snapshot" COMMENT="One row per imported bundle; one active snapshot per course">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 = the snapshot the block and the teacher pages show"/>
+        <FIELD NAME="timegenerated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="When the pipeline generated the recommendations"/>
+        <FIELD NAME="asof" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false" COMMENT="Data cutoff of the snapshot, if any"/>
+        <FIELD NAME="collectedat" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="When the pipeline read Moodle's data for this snapshot"/>
+        <FIELD NAME="topn" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="5" SEQUENCE="false" COMMENT="Items the block shows at once"/>
+        <FIELD NAME="maxremediation" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="3" SEQUENCE="false" COMMENT="At most this many remediation items at once"/>
+        <FIELD NAME="cohort" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="moodle_collector, simulated or mixed"/>
+        <FIELD NAME="mappingversion" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="recommenderversion" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="manifest" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="The bundle manifest (JSON)"/>
+        <FIELD NAME="timeimported" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="courseid-active" UNIQUE="false" FIELDS="courseid, active"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_microlearning_profile" COMMENT="One row per learner and snapshot: profile, engagement and history">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="snapshotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="population" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="moodle_collector or simulated"/>
+        <FIELD NAME="knowledgephase" TYPE="int" LENGTH="2" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="knowledgemodel" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="knowledgestatus" TYPE="char" LENGTH="30" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="engagementstatus" TYPE="char" LENGTH="30" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="sessioncount" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="learningseconds" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="completedactivities" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="courseprogress" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="4"/>
+        <FIELD NAME="lastactive" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="quizattempts" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="learningdays" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timerefreshed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="When the pipeline read this learner's data (snapshot or per-learner refresh)"/>
+        <FIELD NAME="timeimported" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="When this learner's rows were imported"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="snapshotid" TYPE="foreign" FIELDS="snapshotid" REFTABLE="local_microlearning_snapshot" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="snapshotid-userid" UNIQUE="true" FIELDS="snapshotid, userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_microlearning_kcstate" COMMENT="One row per learner, knowledge component and snapshot">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="snapshotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="kcid" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="kcname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="kcdimension" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="topic" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="unitnumber" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="Course section of the KC's unit"/>
+        <FIELD NAME="kcorder" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="Position of the KC's lesson in the course"/>
+        <FIELD NAME="lessoncmid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The KC's lesson"/>
+        <FIELD NAME="quizcmid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="The quiz that practises the KC"/>
+        <FIELD NAME="attemptcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="correctcount" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="lastattempt" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="knowledgelevel" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="strong, developing, weak, started or not_assessed"/>
+        <FIELD NAME="observedaccuracy" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="4"/>
+        <FIELD NAME="predictedcorrectness" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="4"/>
+        <FIELD NAME="statestatus" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="concernstatus" TYPE="char" LENGTH="40" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="reason" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="snapshotid" TYPE="foreign" FIELDS="snapshotid" REFTABLE="local_microlearning_snapshot" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="snapshotid-userid" UNIQUE="false" FIELDS="snapshotid, userid"/>
+        <INDEX NAME="snapshotid-concernstatus" UNIQUE="false" FIELDS="snapshotid, concernstatus"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_microlearning_skill" COMMENT="One row per learner, skill (dimension x unit) and snapshot">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="snapshotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="skillid" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="skillname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="kcdimension" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="unitnumber" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="kccount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="estimatedkccount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="meanpredicted" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="4"/>
+        <FIELD NAME="meanobserved" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="4"/>
+        <FIELD NAME="attemptcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="strongcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="developingcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="weakcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="startedcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="notassessedcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="snapshotid" TYPE="foreign" FIELDS="snapshotid" REFTABLE="local_microlearning_snapshot" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="snapshotid-userid" UNIQUE="false" FIELDS="snapshotid, userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_microlearning_rec" COMMENT="Recommendations: one row per learner, rank and snapshot">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="snapshotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="recrank" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" COMMENT="1 = shown first; the whole queue is stored"/>
+        <FIELD NAME="recgroup" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="forward" SEQUENCE="false" COMMENT="remediation, prepare, forward, or contingency: the slot the item competes for"/>
+        <FIELD NAME="triggercmid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Contingency rows: the quiz whose failure shows this row"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="activitytype" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="kcid" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="kcname" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="reasoncode" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="reasontext" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="basis" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="evidence, prediction or course_order"/>
+        <FIELD NAME="evidence" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="JSON with the numbers behind the reason"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="snapshotid" TYPE="foreign" FIELDS="snapshotid" REFTABLE="local_microlearning_snapshot" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+        <KEY NAME="cmid" TYPE="foreign" FIELDS="cmid" REFTABLE="course_modules" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="snapshotid-userid-recrank" UNIQUE="true" FIELDS="snapshotid, userid, recrank"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_microlearning_dim" COMMENT="One row per learner, KC dimension and snapshot">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="snapshotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="dimension" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="kccount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="estimatedkccount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="meanpredicted" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="4"/>
+        <FIELD NAME="meanobserved" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="4"/>
+        <FIELD NAME="attemptcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="strongcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="developingcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="weakcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="startedcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="notassessedcount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="snapshotid" TYPE="foreign" FIELDS="snapshotid" REFTABLE="local_microlearning_snapshot" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="snapshotid-userid" UNIQUE="false" FIELDS="snapshotid, userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_microlearning_attempt" COMMENT="One row per learner, finished quiz attempt and snapshot">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="snapshotid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="cmid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="attempt" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timefinish" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="score" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="4" COMMENT="Share of the marks, 0..1"/>
+        <FIELD NAME="passfraction" TYPE="number" LENGTH="10" NOTNULL="false" SEQUENCE="false" DECIMALS="4"/>
+        <FIELD NAME="passed" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="snapshotid" TYPE="foreign" FIELDS="snapshotid" REFTABLE="local_microlearning_snapshot" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="snapshotid-userid" UNIQUE="false" FIELDS="snapshotid, userid"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_microlearning_refresh" COMMENT="Requests from Moodle to the engine: refresh these learners' recommendations">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="reason" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false" COMMENT="list_done, quiz_failed or new_learner"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timeprocessed" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Set by the import that refreshed the learner"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="courseid-timeprocessed" UNIQUE="false" FIELDS="courseid, timeprocessed"/>
+        <INDEX NAME="courseid-userid" UNIQUE="false" FIELDS="courseid, userid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
