@@ -1,0 +1,155 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+}}
+{{!
+    @template local_microlearning/profile
+
+    One learner's knowledge profile (teachers and managers).
+
+    Example context (json):
+{
+    "tiles": [
+        {
+            "label": "Topics answered",
+            "value": "12 / 96"
+        }
+    ],
+    "levels": {
+        "segments": [],
+        "legend": [],
+        "total": 0,
+        "hastotal": false
+    },
+    "dimensionchart": null,
+    "heatmap": {
+        "columns": [],
+        "rows": []
+    },
+    "ramplegend": [],
+    "unittabs": [],
+    "unitname": "",
+    "topics": [],
+    "weak": [],
+    "estimates": [],
+    "strengths": [],
+    "quizchart": null,
+    "now": {
+        "items": [],
+        "hasitems": false,
+        "status": "",
+        "pending": null
+    },
+    "engagement": []
+}
+}}
+<div class="local_microlearning-profile">
+    <div class="ml-tiles">
+        {{#tiles}}
+        <div class="ml-tile">
+            <div class="ml-tile-label">{{label}}</div>
+            <div class="ml-tile-value">{{value}}</div>
+            {{#detail}}<div class="ml-tile-detail">{{detail}}</div>{{/detail}}
+        </div>
+        {{/tiles}}
+    </div>
+
+    <section class="ml-section">
+        <h3>{{#str}} knowledgeoverview, local_microlearning {{/str}}</h3>
+        <p class="ml-help">{{#str}} knowledgeoverview_help, local_microlearning {{/str}}</p>
+        {{> local_microlearning/levels }}
+    </section>
+
+    <div class="ml-columns">
+        <section class="ml-section">
+            <h3>{{#str}} bydimension, local_microlearning {{/str}}</h3>
+            <p class="ml-help">{{#str}} bydimension_help, local_microlearning {{/str}}</p>
+            {{#dimensionchart}}{{{dimensionchart}}}{{/dimensionchart}}
+            {{^dimensionchart}}<p>{{#str}} noanswers, local_microlearning {{/str}}</p>{{/dimensionchart}}
+        </section>
+        <section class="ml-section">
+            <h3>{{#str}} byunit, local_microlearning {{/str}}</h3>
+            <p class="ml-help">{{#str}} byunit_help, local_microlearning {{/str}}</p>
+            {{> local_microlearning/heatmap }}
+        </section>
+    </div>
+
+    <section class="ml-section" id="topics">
+        <h3>{{#str}} topics, local_microlearning {{/str}}</h3>
+        <nav class="ml-unittabs" aria-label="{{#str}} units, local_microlearning {{/str}}">
+            {{#unittabs}}
+            <a href="{{url}}" class="{{#active}}active{{/active}}" {{#active}}aria-current="page"{{/active}} title="{{name}}">{{number}}</a>
+            {{/unittabs}}
+        </nav>
+        <h4 class="ml-unitname">{{unitname}}</h4>
+        <ul class="ml-meters">
+            {{#topics}}
+            {{> local_microlearning/topic_meter }}
+            {{/topics}}
+        </ul>
+    </section>
+
+    <div class="ml-columns">
+        <section class="ml-section">
+            <h3>{{#str}} weaktopics, local_microlearning {{/str}}</h3>
+            <p class="ml-help">{{#str}} weaktopics_help, local_microlearning {{/str}}</p>
+            <ul class="ml-meters">
+                {{#weak}}
+                {{> local_microlearning/topic_meter }}
+                {{/weak}}
+            </ul>
+            {{^weak}}<p>{{#str}} noweaktopics, local_microlearning {{/str}}</p>{{/weak}}
+            {{#estimates.0}}
+            <h4 class="ml-subhead">{{#str}} estimatedconcerns, local_microlearning {{/str}}</h4>
+            <p class="ml-help">{{#str}} estimatedconcerns_help, local_microlearning {{/str}}</p>
+            <ul class="ml-meters">
+                {{#estimates}}
+                {{> local_microlearning/topic_meter }}
+                {{/estimates}}
+            </ul>
+            {{/estimates.0}}
+        </section>
+        <section class="ml-section">
+            <h3>{{#str}} strengths, local_microlearning {{/str}}</h3>
+            <ul class="ml-strengths">
+                {{#strengths}}
+                <li><span class="ml-swatch" style="background: #1c5cab"></span><span>{{name}}</span>
+                    <span class="ml-muted">{{unit}} · {{figure}}</span></li>
+                {{/strengths}}
+            </ul>
+            {{^strengths}}<p>{{#str}} nostrengths, local_microlearning {{/str}}</p>{{/strengths}}
+        </section>
+    </div>
+
+    <section class="ml-section">
+        <h3>{{#str}} quizscores, local_microlearning {{/str}}</h3>
+        {{#quizchart}}{{{quizchart}}}{{/quizchart}}
+        {{^quizchart}}<p>{{#str}} noattempts, local_microlearning {{/str}}</p>{{/quizchart}}
+    </section>
+
+    <section class="ml-section">
+        <h3>{{#str}} recommendationsnow, local_microlearning {{/str}}</h3>
+        <p class="ml-help">{{now.status}}</p>
+        {{#now.pending}}<p class="ml-pending">{{now.pending}}</p>{{/now.pending}}
+        {{#now.hasitems}}
+        <ol class="ml-recs">
+            {{#now.items}}
+            <li>
+                <a href="{{url}}">{{{name}}}</a>
+                <span class="badge {{#isestimate}}bg-warning text-dark{{/isestimate}}{{^isestimate}}bg-secondary{{/isestimate}}">{{basis}}</span>
+                <div>{{reason}}</div>
+                {{#evidence}}<div class="ml-muted small">{{evidence}}</div>{{/evidence}}
+            </li>
+            {{/now.items}}
+        </ol>
+        {{/now.hasitems}}
+        {{^now.hasitems}}<p>{{#str}} coursecomplete, local_microlearning {{/str}}</p>{{/now.hasitems}}
+    </section>
+
+    <details class="ml-section">
+        <summary><h3 class="d-inline">{{#str}} engagement, local_microlearning {{/str}}</h3></summary>
+        <p class="ml-help">{{#str}} engagement_help, local_microlearning {{/str}}</p>
+        <table class="generaltable w-auto">
+            {{#engagement}}<tr><th scope="row">{{label}}</th><td>{{value}}</td></tr>{{/engagement}}
+        </table>
+    </details>
+</div>

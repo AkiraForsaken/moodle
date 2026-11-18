@@ -1,0 +1,102 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+}}
+{{!
+    @template local_microlearning/cohort
+
+    The course's learners at a glance (teachers and managers).
+
+    Example context (json):
+    {
+        "tiles": [],
+        "levels": {
+            "segments": [],
+            "legend": [],
+            "total": 0,
+            "hastotal": false
+        },
+        "heatmap": {
+            "columns": [],
+            "rows": []
+        },
+        "ramplegend": [],
+        "hardest": [],
+        "learners": [],
+        "learnercount": 0
+    }
+}}
+<div class="local_microlearning-profile">
+    <div class="ml-tiles">
+        {{#tiles}}
+        <div class="ml-tile">
+            <div class="ml-tile-label">{{label}}</div>
+            <div class="ml-tile-value">{{value}}</div>
+            {{#detail}}<div class="ml-tile-detail">{{detail}}</div>{{/detail}}
+        </div>
+        {{/tiles}}
+    </div>
+
+    <section class="ml-section">
+        <h3>{{#str}} cohortlevels, local_microlearning {{/str}}</h3>
+        <p class="ml-help">{{#str}} cohortlevels_help, local_microlearning {{/str}}</p>
+        {{> local_microlearning/levels }}
+    </section>
+
+    <div class="ml-columns">
+        <section class="ml-section">
+            <h3>{{#str}} byunit, local_microlearning {{/str}}</h3>
+            <p class="ml-help">{{#str}} cohortunits_help, local_microlearning {{/str}}</p>
+            {{> local_microlearning/heatmap }}
+        </section>
+        <section class="ml-section">
+            <h3>{{#str}} weakkcs, local_microlearning {{/str}}</h3>
+            <p class="ml-help">{{#str}} weakkcs_help, local_microlearning {{/str}}</p>
+            <ul class="ml-meters">
+                {{#hardest}}
+                <li class="ml-meter">
+                    <div class="ml-meter-name"><span>{{name}}</span><span class="ml-muted">{{detail}}</span></div>
+                    <div class="ml-meter-row">
+                        <div class="ml-meter-track"><div class="ml-meter-fill" style="width: {{width}}%"></div></div>
+                        <div class="ml-meter-figure">{{figure}}</div>
+                    </div>
+                    <div class="ml-muted small">{{#str}} hardest:mean, local_microlearning, {{mean}} {{/str}}</div>
+                </li>
+                {{/hardest}}
+            </ul>
+            {{^hardest}}<p>{{#str}} noweakkcs, local_microlearning {{/str}}</p>{{/hardest}}
+        </section>
+    </div>
+
+    <section class="ml-section">
+        <h3>{{#str}} learners, local_microlearning {{/str}} ({{learnercount}})</h3>
+        <p class="ml-help">{{#str}} learnerlist_help, local_microlearning {{/str}}</p>
+        <div class="table-responsive">
+        <table class="generaltable ml-learnertable">
+            <thead><tr>
+                <th scope="col">{{#str}} learner, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} tile:assessed, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} tile:correct, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} level:weak, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} level:strong, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} weakestskill, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} estimator, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} refreshed, local_microlearning {{/str}}</th>
+            </tr></thead>
+            <tbody>
+                {{#learners}}
+                <tr>
+                    <td><a href="{{url}}">{{name}}</a>{{#simulated}} <span class="badge bg-warning text-dark">{{#str}} population:simulated, local_microlearning {{/str}}</span>{{/simulated}}</td>
+                    <td>{{answered}}</td>
+                    <td class="ml-cellmeter-cell"><div class="ml-cellmeter">{{#hascorrect}}<div class="ml-meter-track"><div class="ml-meter-fill" style="width: {{correctwidth}}%"></div></div>{{/hascorrect}}<span>{{correct}}</span></div></td>
+                    <td>{{weak}}</td>
+                    <td>{{strong}}</td>
+                    <td>{{weakestskill}}</td>
+                    <td class="small">{{phase}}</td>
+                    <td class="small">{{refreshed}}{{#pending}} <span class="badge bg-info text-dark">{{#str}} pendingbadge, local_microlearning {{/str}}</span>{{/pending}}</td>
+                </tr>
+                {{/learners}}
+            </tbody>
+        </table>
+        </div>
+    </section>
+</div>
