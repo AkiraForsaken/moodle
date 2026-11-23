@@ -50,6 +50,16 @@ class knowledge_display {
     const REFERENCE_COLOR = '#52514e';
 
     /**
+     * @var string[] Categorical colours of the dimensions (skills), in fixed slot order:
+     *   blue, orange, aqua, yellow, magenta, green, violet. Assigned by the dimension's
+     *   position in alphabetical order, so a skill keeps its colour on every page.
+     *   Validated (first four, light surface): CVD worst adjacent Delta E 9.1,
+     *   normal-vision 22.9; aqua and yellow sit below 3:1 contrast, so every bar is
+     *   named on its axis and the chart keeps its data table.
+     */
+    const DIMENSION_COLORS = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#6250d6'];
+
+    /**
      * Readable name of a level.
      *
      * @param string|null $level
@@ -131,6 +141,155 @@ class knowledge_display {
             $legend[] = ['color' => $colour, 'label' => (20 * $i) . '–' . (20 * ($i + 1)) . ' %'];
         }
         return $legend;
+    }
+
+    /**
+     * Colour of a dimension (skill), stable across pages.
+     *
+     * @param string $dimension
+     * @param string[] $all Every dimension of the course.
+     * @return string
+     */
+    public static function dimension_color(string $dimension, array $all): string {
+        $sorted = array_values(array_unique($all));
+        sort($sorted);
+        $index = array_search($dimension, $sorted);
+        return self::DIMENSION_COLORS[($index === false ? 0 : $index) % count(self::DIMENSION_COLORS)];
+    }
+
+    /**
+     * Doughnut of topics by knowledge level.
+     *
+     * @param \renderer_base $output
+     * @param array $counts level => count
+     * @param string $label Series label.
+     * @return string|null Chart HTML (null without any topic).
+     */
+    public static function level_doughnut(\renderer_base $output, array $counts, string $label): ?string {
+        // Tried topics only: "not tried yet" is what is still ahead, not a level, and would
+        // otherwise fill the chart early in a course. Pages state its count in words.
+        $levels = array_values(array_filter(self::LEVELS,
+            fn($level) => $level !== 'not_assessed' && (int) ($counts[$level] ?? 0) > 0));
+        if (!$levels) {
+            return null;
+        }
+        $series = new \core\chart_series($label, array_map(fn($level) => (int) $counts[$level], $levels));
+        $series->set_colors(array_map(fn($level) => self::LEVEL_COLORS[$level], $levels));
+        $chart = new \core\chart_pie();
+        $chart->set_doughnut(true);
+        $chart->add_series($series);
+        $chart->set_labels(array_map([self::class, 'level_name'], $levels));
+        $chart->set_legend_options(['position' => 'right']);
+        return $output->render($chart);
+    }
+
+    /**
+     * Stacked bars: topics of each unit by knowledge level.
+     *
+     * @param \renderer_base $output
+     * @param array $units unitnumber => label
+     * @param array $counts unitnumber => [level => count]
+     * @param string $axislabel
+     * @return string|null
+     */
+    public static function unit_level_chart(\renderer_base $output, array $units, array $counts, string $axislabel): ?string {
+        if (!$units) {
+            return null;
+        }
+        $chart = new \core\chart_bar();
+        $chart->set_stacked(true);
+        foreach (array_diff(self::LEVELS, ['not_assessed']) as $level) {
+            $series = new \core\chart_series(self::level_name($level),
+                array_map(fn($unit) => (int) ($counts[$unit][$level] ?? 0), array_keys($units)));
+            $series->set_color(self::LEVEL_COLORS[$level]);
+            $chart->add_series($series);
+        }
+        $chart->set_labels(array_values($units));
+        $chart->set_legend_options(['position' => 'bottom']);
+        $chart->get_yaxis(0, true)->set_label($axislabel);
+        return $output->render($chart);
+    }
+
+    /**
+     * Per unit: a progress bar of the topics tried (coloured by level) and still ahead (grey).
+     *
+     * @param array $units unitnumber => name
+     * @param array $counts unitnumber => [level => count]
+     * @return array Template rows.
+     */
+    public static function journey(array $units, array $counts): array {
+        $rows = [];
+        foreach ($units as $number => $name) {
+            $unit = $counts[$number] ?? [];
+            $topics = array_sum($unit);
+            $tried = $topics - (int) ($unit['not_assessed'] ?? 0);
+            $segments = [];
+            foreach (array_diff(self::LEVELS, ['not_assessed']) as $level) {
+                if (!empty($unit[$level]) && $topics) {
+                    $segments[] = self::level_badge($level) + ['count' => (int) $unit[$level],
+                        'width' => round(100 * $unit[$level] / $topics, 2)];
+                }
+            }
+            $rows[] = [
+                'number' => $number,
+                'name' => $name,
+                'segments' => $segments,
+                'started' => $tried > 0,
+                'complete' => $topics > 0 && $tried === $topics,
+                'figure' => get_string('journeyrow', 'local_microlearning', (object) ['tried' => $tried, 'topics' => $topics]),
+                'summary' => implode(', ', array_map(fn($s) => "{$s['name']}: {$s['count']}", $segments)),
+            ];
+        }
+        return $rows;
+    }
+
+    /**
+     * Legend of the levels with what each one means.
+     *
+     * @return array
+     */
+    public static function level_guide(): array {
+        return array_map(fn($level) => self::level_badge($level) + [
+            'desc' => get_string('leveldesc:' . $level, 'local_microlearning')], self::LEVELS);
+    }
+
+    /**
+     * Horizontal bars of the share of correct answers per dimension, one colour per dimension.
+     *
+     * @param \renderer_base $output
+     * @param string[] $dimensions In display order.
+     * @param array $values dimension => share 0..1 or null
+     * @param string $label Series label.
+     * @param array|null $reference dimension => share, drawn as a grey second series (null: none).
+     * @param string|null $referencelabel
+     * @return string|null
+     */
+    public static function dimension_chart(\renderer_base $output, array $dimensions, array $values, string $label,
+            ?array $reference = null, ?string $referencelabel = null): ?string {
+        if (!array_filter($values, fn($v) => $v !== null)) {
+            return null;
+        }
+        $series = new \core\chart_series($label,
+            array_map(fn($d) => isset($values[$d]) && $values[$d] !== null ? round(100 * $values[$d]) : null, $dimensions));
+        $series->set_colors(array_map(fn($d) => self::dimension_color($d, $dimensions), $dimensions));
+        $chart = new \core\chart_bar();
+        $chart->set_horizontal(true);
+        $chart->add_series($series);
+        if ($reference) {
+            $context = new \core\chart_series($referencelabel ?? '',
+                array_map(fn($d) => isset($reference[$d]) ? round(100 * $reference[$d]) : null, $dimensions));
+            $context->set_color(self::CONTEXT_COLOR);
+            $chart->add_series($context);
+        } else {
+            $chart->set_legend_options(['display' => false]);
+        }
+        $chart->set_labels(array_map([self::class, 'dimension_name'], $dimensions));
+        $axis = $chart->get_xaxis(0, true);
+        $axis->set_min(0);
+        $axis->set_max(100);
+        $axis->set_stepsize(20);
+        $axis->set_label(get_string('chart:percentcorrect', 'local_microlearning'));
+        return $output->render($chart);
     }
 
     /**

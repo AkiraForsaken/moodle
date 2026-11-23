@@ -105,7 +105,7 @@ class repository {
      *     topicsanswered, answers, correct, weaktopics, strongtopics,
      *     evidenceconcerns, predictionconcerns.
      */
-    public static function cohort(int $snapshotid, ?string $population = null): array {
+    public static function cohort(int $snapshotid, ?string $population = null, ?int $groupid = null): array {
         global $DB;
         $namefields = \core_user\fields::for_name()->get_sql('u', false, '', '', false)->selects;
         $params = [
@@ -114,17 +114,15 @@ class repository {
             'prediction' => self::CONCERN_PREDICTION,
             'snapshotid2' => $snapshotid,
         ];
-        $wherepopulation = '';
-        if ($population !== null) {
-            $wherepopulation = 'AND p.population = :population';
-            $params['population'] = $population;
-        }
-        $sql = "SELECT p.*, $namefields, u.idnumber,
+        $wherepopulation = self::learner_filter('p', $population, $groupid, $params);
+        $sql = "SELECT p.*, $namefields, u.idnumber, u.picture, u.imagealt, u.email,
                        COALESCE(c.topicsanswered, 0) AS topicsanswered,
                        COALESCE(c.answers, 0) AS answers,
                        COALESCE(c.correct, 0) AS correct,
                        COALESCE(c.weaktopics, 0) AS weaktopics,
                        COALESCE(c.strongtopics, 0) AS strongtopics,
+                       COALESCE(c.developingtopics, 0) AS developingtopics,
+                       COALESCE(c.startedtopics, 0) AS startedtopics,
                        COALESCE(c.topics, 0) AS topics,
                        COALESCE(c.evidenceconcerns, 0) AS evidenceconcerns,
                        COALESCE(c.predictionconcerns, 0) AS predictionconcerns
@@ -137,6 +135,8 @@ class repository {
                                SUM(COALESCE(correctcount, 0)) AS correct,
                                SUM(CASE WHEN knowledgelevel = 'weak' THEN 1 ELSE 0 END) AS weaktopics,
                                SUM(CASE WHEN knowledgelevel = 'strong' THEN 1 ELSE 0 END) AS strongtopics,
+                               SUM(CASE WHEN knowledgelevel = 'developing' THEN 1 ELSE 0 END) AS developingtopics,
+                               SUM(CASE WHEN knowledgelevel = 'started' THEN 1 ELSE 0 END) AS startedtopics,
                                SUM(CASE WHEN concernstatus = :evidence THEN 1 ELSE 0 END) AS evidenceconcerns,
                                SUM(CASE WHEN concernstatus = :prediction THEN 1 ELSE 0 END) AS predictionconcerns
                           FROM {local_microlearning_kcstate}
@@ -175,19 +175,16 @@ class repository {
      * @return \stdClass[] kcid, kcname, kcdimension, topic, unitnumber, learners (with answers),
      *                     concerns (evidence-based), meanaccuracy.
      */
-    public static function weak_kcs(int $snapshotid, int $limit = 15, ?string $population = null): array {
+    public static function weak_kcs(int $snapshotid, int $limit = 15, ?string $population = null,
+            ?int $groupid = null): array {
         global $DB;
         $params = [
             'snapshotid' => $snapshotid,
             'evidence' => self::CONCERN_EVIDENCE,
             'evidence2' => self::CONCERN_EVIDENCE,
         ];
-        $join = '';
-        if ($population !== null) {
-            $join = 'JOIN {local_microlearning_profile} p ON p.snapshotid = k.snapshotid AND p.userid = k.userid
-                     AND p.population = :population';
-            $params['population'] = $population;
-        }
+        $join = 'JOIN {local_microlearning_profile} p ON p.snapshotid = k.snapshotid AND p.userid = k.userid '
+            . self::learner_filter('p', $population, $groupid, $params);
         $sql = "SELECT k.kcid, MAX(k.kcname) AS kcname, MAX(k.kcdimension) AS kcdimension, MAX(k.topic) AS topic,
                        MAX(k.unitnumber) AS unitnumber,
                        SUM(CASE WHEN k.attemptcount > 0 THEN 1 ELSE 0 END) AS learners,
@@ -252,16 +249,18 @@ class repository {
      * @param int $minlearners
      * @return array dimension => (object) [mean, learners]
      */
-    public static function cohort_dimension_means(int $snapshotid, string $population, int $minlearners = 5): array {
+    public static function cohort_dimension_means(int $snapshotid, ?string $population, int $minlearners = 5,
+            ?int $groupid = null): array {
         global $DB;
+        $params = ['snapshotid' => $snapshotid, 'minlearners' => $minlearners];
+        $where = self::learner_filter('p', $population, $groupid, $params);
         $sql = "SELECT d.dimension, AVG(d.meanobserved) AS mean, COUNT(d.meanobserved) AS learners
                   FROM {local_microlearning_dim} d
                   JOIN {local_microlearning_profile} p ON p.snapshotid = d.snapshotid AND p.userid = d.userid
-                 WHERE d.snapshotid = :snapshotid AND p.population = :population AND d.meanobserved IS NOT NULL
+                 WHERE d.snapshotid = :snapshotid AND d.meanobserved IS NOT NULL $where
               GROUP BY d.dimension
                 HAVING COUNT(d.meanobserved) >= :minlearners";
-        return $DB->get_records_sql($sql, ['snapshotid' => $snapshotid, 'population' => $population,
-            'minlearners' => $minlearners]);
+        return $DB->get_records_sql($sql, $params);
     }
 
     /**
@@ -272,14 +271,11 @@ class repository {
      * @param int $minlearners
      * @return \stdClass[] unitnumber, kcdimension, mean, learners
      */
-    public static function cohort_skill_means(int $snapshotid, ?string $population, int $minlearners = 5): array {
+    public static function cohort_skill_means(int $snapshotid, ?string $population, int $minlearners = 5,
+            ?int $groupid = null): array {
         global $DB;
         $params = ['snapshotid' => $snapshotid, 'minlearners' => $minlearners];
-        $where = '';
-        if ($population !== null) {
-            $where = 'AND p.population = :population';
-            $params['population'] = $population;
-        }
+        $where = self::learner_filter('p', $population, $groupid, $params);
         $sql = "SELECT s.skillid, MAX(s.unitnumber) AS unitnumber, MAX(s.kcdimension) AS kcdimension,
                        AVG(s.meanobserved) AS mean, COUNT(s.meanobserved) AS learners
                   FROM {local_microlearning_skill} s
@@ -297,19 +293,63 @@ class repository {
      * @param string|null $population
      * @return array level => count
      */
-    public static function cohort_level_counts(int $snapshotid, ?string $population): array {
+    public static function cohort_level_counts(int $snapshotid, ?string $population, ?int $groupid = null): array {
         global $DB;
         $params = ['snapshotid' => $snapshotid];
-        $where = '';
-        if ($population !== null) {
-            $where = 'AND p.population = :population';
-            $params['population'] = $population;
-        }
+        $where = self::learner_filter('p', $population, $groupid, $params);
         return $DB->get_records_sql_menu("SELECT k.knowledgelevel, COUNT(1)
                   FROM {local_microlearning_kcstate} k
                   JOIN {local_microlearning_profile} p ON p.snapshotid = k.snapshotid AND p.userid = k.userid
                  WHERE k.snapshotid = :snapshotid $where
               GROUP BY k.knowledgelevel", $params);
+    }
+
+    /**
+     * Learner x topic counts per unit and knowledge level (population and group filters as elsewhere).
+     *
+     * @param int $snapshotid
+     * @param string|null $population
+     * @param int|null $groupid Moodle group (null = everyone).
+     * @return array unitnumber => [level => count]
+     */
+    public static function cohort_unit_level_counts(int $snapshotid, ?string $population, ?int $groupid = null): array {
+        global $DB;
+        $params = ['snapshotid' => $snapshotid];
+        $where = self::learner_filter('p', $population, $groupid, $params);
+        $rows = $DB->get_recordset_sql("SELECT k.unitnumber, k.knowledgelevel, COUNT(1) AS n
+                  FROM {local_microlearning_kcstate} k
+                  JOIN {local_microlearning_profile} p ON p.snapshotid = k.snapshotid AND p.userid = k.userid
+                 WHERE k.snapshotid = :snapshotid $where
+              GROUP BY k.unitnumber, k.knowledgelevel", $params);
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[(int) $row->unitnumber][$row->knowledgelevel ?: 'not_assessed'] = (int) $row->n;
+        }
+        $rows->close();
+        ksort($counts);
+        return $counts;
+    }
+
+    /**
+     * SQL condition limiting profile rows (alias $alias) to a population and a Moodle group.
+     *
+     * @param string $alias Alias of local_microlearning_profile in the query.
+     * @param string|null $population
+     * @param int|null $groupid
+     * @param array $params Query parameters, extended in place.
+     * @return string " AND ..." or ''
+     */
+    protected static function learner_filter(string $alias, ?string $population, ?int $groupid, array &$params): string {
+        $sql = '';
+        if ($population !== null) {
+            $sql .= " AND $alias.population = :fpopulation";
+            $params['fpopulation'] = $population;
+        }
+        if ($groupid) {
+            $sql .= " AND $alias.userid IN (SELECT gm.userid FROM {groups_members} gm WHERE gm.groupid = :fgroupid)";
+            $params['fgroupid'] = $groupid;
+        }
+        return $sql;
     }
 
     /**

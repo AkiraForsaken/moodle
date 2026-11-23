@@ -10,7 +10,11 @@ use renderer_base;
 use templatable;
 
 /**
- * One learner's knowledge profile, for teachers and managers.
+ * One learner's knowledge profile: for teachers and managers, and for the learner themselves.
+ *
+ * Both see the same layout. The learner's own view ($self) leaves out the
+ * comparison with other learners, the numbers behind each recommendation and
+ * the technical notes; it never shows anyone else's data.
  *
  * Everything shown was computed by the pipeline (knowledge levels, skill and
  * dimension summaries, quiz history); this class only arranges it. The only
@@ -38,6 +42,9 @@ class profile_page implements renderable, templatable {
     /** @var int|null Unit whose topics are listed. */
     protected $unit;
 
+    /** @var bool The learner is looking at their own profile. */
+    protected $self;
+
     /**
      * Constructor.
      *
@@ -46,13 +53,16 @@ class profile_page implements renderable, templatable {
      * @param \stdClass $snapshot Active snapshot.
      * @param \stdClass $profile The learner's profile row in it.
      * @param int|null $unit Unit to list topics for (null: the learner's current unit).
+     * @param bool $self The viewer is the learner.
      */
-    public function __construct(\stdClass $course, \stdClass $user, \stdClass $snapshot, \stdClass $profile, ?int $unit) {
+    public function __construct(\stdClass $course, \stdClass $user, \stdClass $snapshot, \stdClass $profile, ?int $unit,
+            bool $self = false) {
         $this->course = $course;
         $this->user = $user;
         $this->snapshot = $snapshot;
         $this->profile = $profile;
         $this->unit = $unit;
+        $this->self = $self;
     }
 
     /**
@@ -84,17 +94,27 @@ class profile_page implements renderable, templatable {
             return $cm && $cm->url ? ['name' => $cm->get_formatted_name(), 'url' => $cm->url->out(false)] : null;
         };
 
+        $unitcounts = [];
+        foreach ($states as $state) {
+            $unitcounts[(int) $state->unitnumber][$state->knowledgelevel ?: 'not_assessed'] =
+                ($unitcounts[(int) $state->unitnumber][$state->knowledgelevel ?: 'not_assessed'] ?? 0) + 1;
+        }
+        $unitlabels = [];
+        foreach ($units as $number => $name) {
+            $unitlabels[$number] = get_string('unitn', 'local_microlearning', $number);
+        }
+
         return [
-            'tiles' => [
-                ['label' => get_string('tile:assessed', 'local_microlearning'),
-                    'value' => "$assessed / " . count($states)],
-                ['label' => get_string('tile:correct', 'local_microlearning'),
-                    'value' => $answers ? knowledge_display::percent($correct / $answers) : '–',
-                    'detail' => get_string('tile:correct_detail', 'local_microlearning',
-                        (object) ['correct' => $correct, 'answers' => $answers])],
-                ['label' => get_string('level:weak', 'local_microlearning'), 'value' => $counts['weak']],
-                ['label' => get_string('level:strong', 'local_microlearning'), 'value' => $counts['strong']],
-            ],
+            'self' => $this->self,
+            'teacher' => !$this->self,
+            'hero' => $this->hero($output, $counts, $assessed, count($states), $answers, $correct),
+            'leveldoughnut' => knowledge_display::level_doughnut($output, $counts,
+                get_string('triedlevels', 'local_microlearning')),
+            'untried' => $counts['not_assessed'],
+            'journey' => knowledge_display::journey($units, $unitcounts),
+            'levelguide' => knowledge_display::level_guide(),
+            'unitchart' => knowledge_display::unit_level_chart($output, $unitlabels, $unitcounts,
+                get_string('topicscount', 'local_microlearning')),
             'levels' => knowledge_display::segmented_levels($counts),
             'dimensionchart' => $this->dimension_chart($output, $dimensions),
             'heatmap' => $this->heatmap($dimensions, $units),
@@ -105,6 +125,7 @@ class profile_page implements renderable, templatable {
                 'active' => $number === $unit,
                 'url' => (new \moodle_url('/local/microlearning/profile.php', ['id' => $this->course->id,
                     'userid' => $this->user->id, 'unit' => $number]))->out(false) . '#topics',
+                'label' => get_string('unitn', 'local_microlearning', $number),
             ], array_keys($units)),
             'unitname' => $units[$unit] ?? '',
             'topics' => array_values(array_map(fn($state) => $this->topic_row($state, $link),
@@ -115,6 +136,53 @@ class profile_page implements renderable, templatable {
             'quizchart' => $this->quiz_chart($output),
             'now' => $this->now(),
             'engagement' => $this->engagement(),
+        ];
+    }
+
+    /**
+     * The header card: picture, name, course progress and the level counts.
+     *
+     * @param renderer_base $output
+     * @param array $counts level => topics
+     * @param int $assessed
+     * @param int $topics
+     * @param int $answers
+     * @param int $correct
+     * @return array
+     */
+    protected function hero(renderer_base $output, array $counts, int $assessed, int $topics, int $answers,
+            int $correct): array {
+        $progress = $this->profile->courseprogress === null ? 0 : (float) $this->profile->courseprogress;
+        $chips = [];
+        foreach (knowledge_display::LEVELS as $level) {
+            $chips[] = knowledge_display::level_badge($level) + [
+                'count' => (int) $counts[$level],
+                'textcolor' => in_array($level, ['strong', 'weak']) ? '#ffffff' : '#0b0b0b',
+            ];
+        }
+        $p = $this->profile;
+        return [
+            'picture' => $output->user_picture($this->user, ['size' => 100, 'link' => !$this->self,
+                'courseid' => $this->course->id, 'class' => 'ml-hero-picture']),
+            'name' => fullname($this->user),
+            'course' => format_string($this->course->fullname),
+            'progress' => round(100 * $progress),
+            'progressdeg' => round(360 * $progress),
+            'chips' => $chips,
+            'stats' => [
+                ['icon' => 'i/completion-auto-y', 'label' => get_string('tile:assessed', 'local_microlearning'),
+                    'value' => "$assessed / $topics"],
+                ['icon' => 'i/grade_correct', 'label' => get_string('tile:correct', 'local_microlearning'),
+                    'value' => $answers ? knowledge_display::percent($correct / $answers) : '–',
+                    'detail' => get_string('tile:correct_detail', 'local_microlearning',
+                        (object) ['correct' => $correct, 'answers' => $answers])],
+                ['icon' => 'i/grades', 'label' => get_string('quizattempts', 'local_microlearning'),
+                    'value' => $p->quizattempts ?? '–'],
+                ['icon' => 'i/calendar', 'label' => get_string('learningdays', 'local_microlearning'),
+                    'value' => $p->learningdays ?? '–'],
+                ['icon' => 'i/duration', 'label' => get_string('learningtime', 'local_microlearning'),
+                    'value' => $p->learningseconds === null ? '–' : format_time((int) $p->learningseconds)],
+            ],
         ];
     }
 
@@ -177,33 +245,17 @@ class profile_page implements renderable, templatable {
     protected function dimension_chart(renderer_base $output, array $order): ?string {
         $mine = [];
         foreach (repository::dimensions($this->snapshot->id, $this->user->id) as $row) {
-            $mine[$row->dimension] = $row;
+            $mine[$row->dimension] = $row->meanobserved === null ? null : (float) $row->meanobserved;
         }
-        if (!array_filter($mine, fn($row) => $row->meanobserved !== null)) {
-            return null;
+        // The learner's own view has no comparison with other learners.
+        $cohort = null;
+        if (!$this->self) {
+            $means = repository::cohort_dimension_means($this->snapshot->id, $this->profile->population, self::MIN_COHORT);
+            $cohort = $means ? array_map(fn($row) => (float) $row->mean, $means) : null;
         }
-        $cohort = repository::cohort_dimension_means($this->snapshot->id, $this->profile->population, self::MIN_COHORT);
-        $labels = array_map([knowledge_display::class, 'dimension_name'], $order);
-        $learner = new \core\chart_series(get_string('chart:learner', 'local_microlearning'),
-            array_map(fn($d) => isset($mine[$d]) && $mine[$d]->meanobserved !== null
-                ? round(100 * $mine[$d]->meanobserved) : null, $order));
-        $learner->set_color(knowledge_display::LEARNER_COLOR);
-        $chart = new \core\chart_bar();
-        $chart->set_horizontal(true);
-        $chart->add_series($learner);
-        if ($cohort) {
-            $context = new \core\chart_series(get_string('chart:cohort', 'local_microlearning'),
-                array_map(fn($d) => isset($cohort[$d]) ? round(100 * $cohort[$d]->mean) : null, $order));
-            $context->set_color(knowledge_display::CONTEXT_COLOR);
-            $chart->add_series($context);
-        }
-        $chart->set_labels($labels);
-        $axis = $chart->get_xaxis(0, true);
-        $axis->set_min(0);
-        $axis->set_max(100);
-        $axis->set_stepsize(20);
-        $axis->set_label(get_string('chart:percentcorrect', 'local_microlearning'));
-        return $output->render($chart);
+        return knowledge_display::dimension_chart($output, $order, $mine,
+            get_string($this->self ? 'chart:you' : 'chart:learner', 'local_microlearning'), $cohort,
+            get_string('chart:cohort', 'local_microlearning'));
     }
 
     /**
@@ -360,7 +412,7 @@ class profile_page implements renderable, templatable {
         foreach ($window->items() as $item) {
             $rec = $item['rec'];
             $evidence = [];
-            foreach ((array) json_decode($rec->evidence ?? '{}', true) as $key => $value) {
+            foreach ($this->self ? [] : (array) json_decode($rec->evidence ?? '{}', true) as $key => $value) {
                 if ($value !== null && !is_array($value)) {
                     $evidence[] = "$key: $value";
                 }
@@ -373,6 +425,9 @@ class profile_page implements renderable, templatable {
                 'basis' => get_string('basis:' . $basis, 'local_microlearning'),
                 'isestimate' => $basis === 'prediction',
                 'evidence' => implode('; ', $evidence),
+                'main' => !$items,
+                'remediation' => $rec && $rec->recgroup === recommendation_window::GROUP_REMEDIATION,
+                'icon' => $item['cm']->get_icon_url()->out(false),
             ];
         }
         $pending = repository::pending_refresh($this->course->id, $this->user->id);
@@ -385,7 +440,7 @@ class profile_page implements renderable, templatable {
                 'done' => $done,
                 'left' => max(0, count($window->queue()) - $done),
             ]),
-            'pending' => $pending ? get_string('refreshpending', 'local_microlearning', (object) [
+            'pending' => $pending && !$this->self ? get_string('refreshpending', 'local_microlearning', (object) [
                 'reason' => get_string('reason:' . $pending->reason, 'local_microlearning'),
                 'time' => userdate($pending->timecreated),
             ]) : null,

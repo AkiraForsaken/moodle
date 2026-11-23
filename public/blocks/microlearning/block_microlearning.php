@@ -72,6 +72,10 @@ class block_microlearning extends block_base {
             $this->content->footer = html_writer::link(
                 new moodle_url('/local/microlearning/index.php', ['id' => $course->id]),
                 get_string('viewprofiles', 'block_microlearning'));
+        } else if (has_capability('local/microlearning:viewownprofile', $context)) {
+            $this->content->footer = html_writer::link(
+                new moodle_url('/local/microlearning/profile.php', ['id' => $course->id]),
+                get_string('myprofile', 'block_microlearning'));
         }
 
         // Always the viewer's own queue: a student can never see another learner's list.
@@ -101,13 +105,20 @@ class block_microlearning extends block_base {
                 'reason' => $rec ? $rec->reasontext : get_string('fallbackreason', 'block_microlearning'),
                 'basis' => get_string('basis:' . $basis, 'block_microlearning'),
                 'isestimate' => $basis === 'prediction',
+                // The first item is the main recommendation; remediation items are revision.
+                'remediation' => $rec && $rec->recgroup === \local_microlearning\local\recommendation_window::GROUP_REMEDIATION,
+                // Activity type sets the colour (learn: blue, check: violet); revision adds a red marker.
+                'kindclass' => $cm->modname === 'quiz' ? 'check' : 'learn',
+                'kind' => get_string('kind:' . ($cm->modname === 'quiz' ? 'quiz' : 'learn'), 'block_microlearning'),
             ];
         }
+        $main = array_shift($items);
         $refreshed = $window->refreshed_at();
         $this->content->text = $OUTPUT->render_from_template('block_microlearning/content', [
+            'main' => $main,
             'items' => $items,
             'hasitems' => !empty($items),
-            'complete' => !$items,
+            'complete' => !$main,
             'updated' => $refreshed ? get_string('updated', 'block_microlearning', userdate($refreshed,
                 get_string('strftimedatetimeshort', 'langconfig'))) : '',
             'simulated' => ($window->profile()->population ?? '') === repository::POPULATION_SIMULATED,

@@ -11,7 +11,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Add "Learner profiles" to the course navigation for those allowed to see it.
+ * Add "Learner profiles" (teachers) or "My learning profile" (learners) to the course navigation.
  *
  * @param navigation_node $navigation
  * @param stdClass $course
@@ -19,6 +19,16 @@ defined('MOODLE_INTERNAL') || die();
  */
 function local_microlearning_extend_navigation_course($navigation, $course, $context) {
     if (!has_capability('local/microlearning:viewprofiles', $context)) {
+        if (has_capability('local/microlearning:viewownprofile', $context) && is_enrolled($context)) {
+            $navigation->add(
+                get_string('myprofile', 'local_microlearning'),
+                new moodle_url('/local/microlearning/profile.php', ['id' => $course->id]),
+                navigation_node::TYPE_SETTING,
+                null,
+                'local_microlearning_self',
+                new pix_icon('i/user', '')
+            );
+        }
         return;
     }
     $navigation->add(

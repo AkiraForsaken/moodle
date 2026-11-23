@@ -21,4 +21,15 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
+    // See one's own learner profile (knowledge levels, skills, quiz history, next steps).
+    'local/microlearning:viewownprofile' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => [
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 ];

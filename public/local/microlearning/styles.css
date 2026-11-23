@@ -76,3 +76,96 @@
 .local_microlearning-profile table.ml-heatmap td { border: 0; }
 .local_microlearning-profile table.ml-learnertable td.ml-cellmeter-cell { min-width: 9rem; }
 .local_microlearning-profile .ml-cellmeter { display: flex; align-items: center; gap: .5rem; }
+
+/* 0.4.0: dashboard layout (cards on Bootstrap's 12-column grid, after the
+   local_learning_analytics course dashboard), hero card, colour accents. */
+.local_microlearning-profile .ml-card { border: 1px solid var(--ml-track); border-radius: .75rem;
+    box-shadow: 0 1px 2px rgba(11, 11, 11, .06); }
+.local_microlearning-profile .ml-card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: .25rem; }
+.local_microlearning-profile .ml-accent-weak { border-top: 4px solid #e34948; }
+.local_microlearning-profile .ml-accent-strong { border-top: 4px solid #1c5cab; }
+.local_microlearning-profile .ml-accent-next { border-top: 4px solid #1baf7a; }
+.local_microlearning-profile .ml-fill-weak { background: #e34948; }
+
+/* Hero: band, avatar, name, level chips, progress ring, stats. */
+.local_microlearning-profile .ml-hero { border: 0; border-radius: .75rem; overflow: hidden;
+    box-shadow: 0 2px 8px rgba(11, 11, 11, .08); }
+.local_microlearning-profile .ml-hero-band { height: 4.5rem;
+    background: linear-gradient(110deg, #104281 0%, #2a78d6 55%, #1baf7a 100%); }
+.local_microlearning-profile .ml-hero-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem 1.5rem;
+    margin-top: -3.25rem; }
+.local_microlearning-profile .ml-hero-avatar img { width: 100px; height: 100px; border-radius: 50%;
+    border: 4px solid #fff; box-shadow: 0 1px 4px rgba(11, 11, 11, .2); background: #fff; }
+.local_microlearning-profile .ml-hero-title { flex: 1 1 16rem; min-width: 0; }
+.local_microlearning-profile .ml-chips { list-style: none; padding: 0; margin: .5rem 0 0; display: flex; flex-wrap: wrap; gap: .35rem; }
+.local_microlearning-profile .ml-chip { border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; }
+.local_microlearning-profile .ml-chip.ml-level-not_assessed,
+.local_microlearning-profile .ml-chip[style*="#e6e5e0"] { box-shadow: inset 0 0 0 1px #c9c8c2; }
+.local_microlearning-profile .ml-ring { --ml-deg: 0deg; width: 7.5rem; height: 7.5rem; border-radius: 50%; flex: none;
+    background: conic-gradient(#1baf7a var(--ml-deg), var(--ml-track) 0); display: grid; place-items: center; }
+.local_microlearning-profile .ml-ring-inner { width: 5.9rem; height: 5.9rem; border-radius: 50%; background: #fff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.local_microlearning-profile .ml-ring-value { font-size: 1.5rem; font-weight: 700; line-height: 1; }
+.local_microlearning-profile .ml-ring-label { font-size: .7rem; color: var(--ml-text-muted); padding: 0 .4rem; }
+.local_microlearning-profile .ml-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: .75rem; margin-top: 1.25rem; }
+.local_microlearning-profile .ml-stat { display: flex; gap: .6rem; align-items: flex-start; padding: .6rem .75rem;
+    border-radius: .5rem; background: #f4f7fc; }
+.local_microlearning-profile .ml-stat-icon .icon { color: #2a78d6; font-size: 1.1rem; margin: .15rem 0 0; }
+.local_microlearning-profile .ml-stat-value { font-size: 1.25rem; font-weight: 600; line-height: 1.2; }
+.local_microlearning-profile .ml-stat-label { font-size: .8rem; color: var(--ml-text-muted); }
+.local_microlearning-profile .ml-stat-detail { font-size: .75rem; color: var(--ml-text-muted); }
+
+/* Coloured tiles on the group page. */
+.local_microlearning-profile .ml-tile { border-left: 5px solid var(--ml-tile-accent, var(--ml-track));
+    box-shadow: 0 1px 2px rgba(11, 11, 11, .06); }
+
+/* Recommendations: the first one is the main one. */
+.local_microlearning-profile .ml-recs { list-style: none; padding: 0; margin: 0; }
+.local_microlearning-profile .ml-recs li { padding: .5rem .65rem; border-radius: .5rem; border: 1px solid var(--ml-track); }
+.local_microlearning-profile .ml-rec-link { font-weight: 600; display: inline-flex; gap: .4rem; align-items: center; }
+.local_microlearning-profile .ml-rec-reason { font-size: .875rem; margin: .2rem 0; }
+.local_microlearning-profile .ml-rec-remediation { border-left: 4px solid #e34948; }
+.local_microlearning-profile .ml-rec-main { background: #eef5fd; border: 2px solid #2a78d6; }
+.local_microlearning-profile .ml-rec-main.ml-rec-remediation { background: #fdf0f0; border-color: #e34948; border-left-width: 2px; }
+.local_microlearning-profile .ml-rec-kicker { font-size: .7rem; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; color: #104281; }
+.local_microlearning-profile .ml-rec-main .ml-rec-link { font-size: 1.05rem; }
+
+/* Group page: filter bar, list form, per-learner level bar. */
+.local_microlearning-profile .ml-pills .nav-link { padding: .3rem .8rem; }
+.ml-filterbar .ml-pills { margin: 0; }
+.local_microlearning-profile .ml-learnercell { white-space: nowrap; }
+.local_microlearning-profile .ml-learnercell img { border-radius: 50%; margin-right: .35rem; }
+.local_microlearning-profile .ml-minibar-cell { min-width: 10rem; }
+.local_microlearning-profile .ml-minibar { display: flex; gap: 2px; height: .7rem; }
+.local_microlearning-profile .ml-minibar span { min-width: 2px; }
+.local_microlearning-profile .ml-minibar span:first-child { border-radius: 4px 0 0 4px; }
+.local_microlearning-profile .ml-minibar span:last-child { border-radius: 0 4px 4px 0; }
+.local_microlearning-profile .ml-dot { display: inline-block; width: .55rem; height: .55rem; border-radius: 50%; margin-right: .2rem; }
+.local_microlearning-profile .chart-area .chart-image { height: 18rem; }
+
+/* 0.4.0 (2026-11-22, later): reading guide, level legend with meanings, journey bars (tried vs ahead). */
+.local_microlearning-profile .ml-guide { border: 1px solid #c8dcf5; background: #f4f8fe; border-radius: .75rem; }
+.local_microlearning-profile .ml-guide summary { cursor: pointer; }
+.local_microlearning-profile .ml-levelguide { list-style: none; padding: 0; margin: 0; display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: .3rem 1.25rem; font-size: .875rem; }
+.local_microlearning-profile .ml-levelguide li { display: flex; align-items: baseline; gap: .4rem; flex-wrap: wrap; }
+.local_microlearning-profile .ml-swatch.ml-level-not_assessed { box-shadow: inset 0 0 0 1px #c9c8c2; }
+.local_microlearning-profile .ml-journey { list-style: none; padding: 0; margin: 0; }
+.local_microlearning-profile .ml-journey li { display: grid; grid-template-columns: minmax(10rem, 18rem) 1fr 9rem;
+    align-items: center; gap: .4rem 1rem; padding: .4rem 0; border-bottom: 1px solid var(--ml-track); }
+.local_microlearning-profile .ml-journey-name { font-weight: 600; display: flex; align-items: center; gap: .5rem; min-width: 0; }
+.local_microlearning-profile .ml-journey-num { flex: none; width: 1.6rem; height: 1.6rem; border-radius: 50%; display: grid;
+    place-items: center; background: #2a78d6; color: #fff; font-size: .8rem; }
+.local_microlearning-profile .ml-journey-ahead .ml-journey-num { background: #a8a7a1; }
+.local_microlearning-profile .ml-journey-ahead .ml-journey-name { color: var(--ml-text-muted); font-weight: 500; }
+.local_microlearning-profile .ml-journey-done { color: #008300; }
+.local_microlearning-profile .ml-journey-bar { display: flex; gap: 2px; height: .9rem; background: var(--ml-track);
+    border-radius: 4px; overflow: hidden; }
+.local_microlearning-profile .ml-journey-bar span { min-width: 3px; }
+.local_microlearning-profile .ml-journey-figure { font-size: .85rem; color: var(--ml-text-muted); text-align: right; }
+@media (max-width: 48rem) {
+    .local_microlearning-profile .ml-journey li { grid-template-columns: 1fr; }
+    .local_microlearning-profile .ml-journey-figure { text-align: left; }
+}
