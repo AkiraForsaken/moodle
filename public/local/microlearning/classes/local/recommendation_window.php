@@ -47,6 +47,12 @@ class recommendation_window {
     /** @var string[] Reasons done once their lesson is read again. */
     const REREAD_REASONS = ['review_weak_kc', 'revise_before_retry', 'revisit_prerequisite'];
 
+    /**
+     * @var string[] Reasons done once the quiz is attempted again: practice and
+     * challenge quizzes have no pass mark and may already be complete.
+     */
+    const ATTEMPT_REASONS = ['practice_weak_kc', 'challenge_strong_kc'];
+
     /** @var \stdClass */
     protected $course;
 
@@ -309,7 +315,7 @@ class recommendation_window {
         foreach ($effective as $item) {
             if (in_array($item['rec']->reasoncode, self::REREAD_REASONS)) {
                 $rereadbysince[$sinceof($item)][] = $item['cmid'];
-            } else if ($item['rec']->reasoncode === 'practice_weak_kc') {
+            } else if (in_array($item['rec']->reasoncode, self::ATTEMPT_REASONS)) {
                 $practicebysince[$sinceof($item)][] = $item['cmid'];
             }
         }
@@ -329,7 +335,7 @@ class recommendation_window {
             $cmid = $item['cmid'];
             if (in_array($rec->reasoncode, self::REREAD_REASONS)) {
                 $isdone = isset($viewed[$sinceof($item)][$cmid]);
-            } else if ($rec->reasoncode === 'practice_weak_kc') {
+            } else if (in_array($rec->reasoncode, self::ATTEMPT_REASONS)) {
                 $isdone = isset($practised[$sinceof($item)][$cmid]);
             } else {
                 $cm = $modinfo->cms[$cmid] ?? null;
