@@ -1,0 +1,97 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+}}
+{{!
+    @template local_microlearning/engine_overview
+
+    Engine dashboard, overview: status tiles, courses, recent jobs, pending refresh requests.
+
+    Example context (json):
+    {
+        "configured": true, "settingsurl": "#", "error": "",
+        "tiles": [{"label": "Engine", "value": "Reachable", "detail": "version 1.0.0", "color": "#008300"}],
+        "courses": [{"courseid": 12, "name": "Course", "exists": true, "url": "#", "served": true,
+                     "snapshots": 3, "lastimport": "23/11/26, 14:00"}],
+        "hascourses": true,
+        "jobs": [{"withcourse": true, "courseid": 12, "kind": "Learner refresh", "learners": 1,
+                  "state": "Done", "statecolor": "success", "started": "23/11/26, 14:00",
+                  "duration": "2 secs", "error": ""}],
+        "hasjobs": true,
+        "pending": [{"reason": "Quiz failed", "requests": 1, "oldest": "3 mins"}],
+        "haspending": true
+    }
+}}
+<div class="local_microlearning-profile local_microlearning-engine">
+    {{^configured}}
+        <div class="alert alert-warning">{{#str}} engine:notconfigured, local_microlearning, {{settingsurl}} {{/str}}</div>
+    {{/configured}}
+    {{#error}}
+        <div class="alert alert-danger">{{#str}} engine:error, local_microlearning {{/str}} {{error}}</div>
+    {{/error}}
+
+    <div class="ml-tiles">
+        {{#tiles}}
+        <div class="ml-tile" style="--ml-tile-accent: {{color}}">
+            <div class="ml-tile-label">{{label}}</div>
+            <div class="ml-tile-value">{{value}}</div>
+            {{#detail}}<div class="ml-tile-detail">{{detail}}</div>{{/detail}}
+        </div>
+        {{/tiles}}
+    </div>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-7">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h3 class="h5">{{#str}} engine:coursestitle, local_microlearning {{/str}}</h3>
+                <p class="ml-help">{{#str}} engine:courseshelp, local_microlearning {{/str}}</p>
+                <table class="table table-sm align-middle">
+                    <thead><tr>
+                        <th>{{#str}} course {{/str}}</th>
+                        <th>{{#str}} engine:workspace, local_microlearning {{/str}}</th>
+                        <th class="text-end">{{#str}} engine:snapshots, local_microlearning {{/str}}</th>
+                        <th>{{#str}} engine:lastimport, local_microlearning {{/str}}</th>
+                    </tr></thead>
+                    <tbody>
+                    {{#courses}}
+                        <tr>
+                            <td><a href="{{url}}">{{name}}</a> <span class="ml-muted">({{courseid}})</span></td>
+                            <td>{{#served}}<span class="badge bg-success">{{#str}} yes {{/str}}</span>{{/served}}{{^served}}<span class="badge bg-secondary">{{#str}} no {{/str}}</span>{{/served}}</td>
+                            <td class="text-end">{{snapshots}}</td>
+                            <td>{{lastimport}}</td>
+                        </tr>
+                    {{/courses}}
+                    {{^courses}}<tr><td colspan="4" class="ml-muted">{{#str}} engine:nocourses, local_microlearning {{/str}}</td></tr>{{/courses}}
+                    </tbody>
+                </table>
+            </div></section>
+        </div>
+        <div class="col-lg-5">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h3 class="h5">{{#str}} engine:pendingtitle, local_microlearning {{/str}}</h3>
+                <p class="ml-help">{{#str}} engine:pendinghelp, local_microlearning {{/str}}</p>
+                {{#haspending}}
+                <table class="table table-sm">
+                    <thead><tr>
+                        <th>{{#str}} engine:reason, local_microlearning {{/str}}</th>
+                        <th class="text-end">{{#str}} engine:requests, local_microlearning {{/str}}</th>
+                        <th>{{#str}} engine:oldest, local_microlearning {{/str}}</th>
+                    </tr></thead>
+                    <tbody>{{#pending}}<tr><td>{{reason}}</td><td class="text-end">{{requests}}</td><td>{{oldest}}</td></tr>{{/pending}}</tbody>
+                </table>
+                {{/haspending}}
+                {{^haspending}}<p class="ml-muted">{{#str}} engine:nopending, local_microlearning {{/str}}</p>{{/haspending}}
+            </div></section>
+        </div>
+    </div>
+
+    <section class="card ml-card mt-4"><div class="card-body">
+        <h3 class="h5">{{#str}} engine:jobstitle, local_microlearning {{/str}}</h3>
+        <p class="ml-help">{{#str}} engine:jobshelp, local_microlearning {{/str}}</p>
+        {{> local_microlearning/engine_jobs }}
+    </div></section>
+</div>

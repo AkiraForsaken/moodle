@@ -1,0 +1,178 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+}}
+{{!
+    @template local_microlearning/cohort
+
+    A group of learners at a glance (teachers and managers): charts over the
+    whole selection, then a paginated, searchable, sortable learner list.
+
+    Example context (json):
+    {
+        "tiles": [],
+        "leveldoughnut": null,
+        "untried": 0,
+        "levelguide": [],
+        "unitchart": null,
+        "dimensionchart": null,
+        "histogram": null,
+        "heatmap": {
+            "columns": [],
+            "rows": []
+        },
+        "ramplegend": [],
+        "hardest": [],
+        "learners": [],
+        "learnercount": 0,
+        "pagingbar": "",
+        "search": "",
+        "sorts": [],
+        "perpages": [],
+        "formaction": "",
+        "hidden": [],
+        "rangetext": ""
+    }
+}}
+<div class="local_microlearning-profile">
+    <div class="ml-tiles">
+        {{#tiles}}
+        <div class="ml-tile" style="--ml-tile-accent: {{color}}">
+            <div class="ml-tile-label">{{label}}</div>
+            <div class="ml-tile-value">{{value}}</div>
+            {{#detail}}<div class="ml-tile-detail">{{detail}}</div>{{/detail}}
+        </div>
+        {{/tiles}}
+    </div>
+
+    <ul class="ml-levelguide mt-3">
+        {{#levelguide}}
+        <li><span class="ml-swatch ml-level-{{level}}" style="background: {{color}}"></span><strong>{{name}}</strong> <span class="ml-muted">{{desc}}</span></li>
+        {{/levelguide}}
+    </ul>
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-5">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h4 class="ml-card-title">{{#str}} triedlevels, local_microlearning {{/str}}</h4>
+                <p class="ml-help">{{#str}} cohorttried_help, local_microlearning, {{untried}} {{/str}}</p>
+                {{#leveldoughnut}}{{{leveldoughnut}}}{{/leveldoughnut}}
+                {{^leveldoughnut}}<p>{{#str}} noanswers, local_microlearning {{/str}}</p>{{/leveldoughnut}}
+            </div></section>
+        </div>
+        <div class="col-lg-7">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h4 class="ml-card-title">{{#str}} unitlevels, local_microlearning {{/str}}</h4>
+                <p class="ml-help">{{#str}} cohortunittried_help, local_microlearning {{/str}}</p>
+                {{#unitchart}}{{{unitchart}}}{{/unitchart}}
+            </div></section>
+        </div>
+        <div class="col-lg-6">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h4 class="ml-card-title">{{#str}} bydimension, local_microlearning {{/str}}</h4>
+                <p class="ml-help">{{#str}} cohortdimension_help, local_microlearning {{/str}}</p>
+                {{#dimensionchart}}{{{dimensionchart}}}{{/dimensionchart}}
+                {{^dimensionchart}}<p>{{#str}} heat:toofew, local_microlearning, 5 {{/str}}</p>{{/dimensionchart}}
+            </div></section>
+        </div>
+        <div class="col-lg-6">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h4 class="ml-card-title">{{#str}} histogram, local_microlearning {{/str}}</h4>
+                <p class="ml-help">{{#str}} histogram_help, local_microlearning {{/str}}</p>
+                {{#histogram}}{{{histogram}}}{{/histogram}}
+                {{^histogram}}<p>{{#str}} noanswers, local_microlearning {{/str}}</p>{{/histogram}}
+            </div></section>
+        </div>
+        <div class="col-lg-6">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h4 class="ml-card-title">{{#str}} byunit, local_microlearning {{/str}}</h4>
+                <p class="ml-help">{{#str}} cohortunits_help, local_microlearning {{/str}}</p>
+                {{> local_microlearning/heatmap }}
+            </div></section>
+        </div>
+        <div class="col-lg-6">
+            <section class="card ml-card ml-accent-weak h-100"><div class="card-body">
+                <h4 class="ml-card-title">{{#str}} weakkcs, local_microlearning {{/str}}</h4>
+                <p class="ml-help">{{#str}} weakkcs_help, local_microlearning {{/str}}</p>
+                <ul class="ml-meters">
+                    {{#hardest}}
+                    <li class="ml-meter">
+                        <div class="ml-meter-name"><span>{{name}}</span><span class="ml-muted">{{detail}}</span></div>
+                        <div class="ml-meter-row">
+                            <div class="ml-meter-track"><div class="ml-meter-fill ml-fill-weak" style="width: {{width}}%"></div></div>
+                            <div class="ml-meter-figure">{{figure}}</div>
+                        </div>
+                        <div class="ml-muted small">{{#str}} hardest:mean, local_microlearning, {{mean}} {{/str}}</div>
+                    </li>
+                    {{/hardest}}
+                </ul>
+                {{^hardest}}<p>{{#str}} noweakkcs, local_microlearning {{/str}}</p>{{/hardest}}
+            </div></section>
+        </div>
+    </div>
+
+    <section class="card ml-card mt-4" id="learners"><div class="card-body">
+        <h4 class="ml-card-title">{{#str}} learners, local_microlearning {{/str}} ({{learnercount}})</h4>
+        <p class="ml-help">{{#str}} learnerlist_help, local_microlearning {{/str}}</p>
+        <form class="ml-listform d-flex flex-wrap align-items-end gap-2 mb-3" method="get" action="{{formaction}}#learners">
+            {{#hidden}}<input type="hidden" name="{{name}}" value="{{value}}">{{/hidden}}
+            <div>
+                <label class="form-label small mb-0" for="ml-search">{{#str}} searchlearner, local_microlearning {{/str}}</label>
+                <input type="search" class="form-control form-control-sm" id="ml-search" name="search" value="{{search}}">
+            </div>
+            <div>
+                <label class="form-label small mb-0" for="ml-sort">{{#str}} sortby, local_microlearning {{/str}}</label>
+                <select class="form-select form-select-sm" id="ml-sort" name="sort">
+                    {{#sorts}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{name}}</option>{{/sorts}}
+                </select>
+            </div>
+            <div>
+                <label class="form-label small mb-0" for="ml-perpage">{{#str}} perpage, local_microlearning {{/str}}</label>
+                <select class="form-select form-select-sm" id="ml-perpage" name="perpage">
+                    {{#perpages}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{value}}</option>{{/perpages}}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm">{{#str}} apply, local_microlearning {{/str}}</button>
+        </form>
+        <div class="table-responsive">
+        <table class="generaltable ml-learnertable">
+            <thead><tr>
+                <th scope="col">{{#str}} learner, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} knowledgeoverview, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} tile:assessed, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} tile:correct, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} courseprogress, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} weakestskill, local_microlearning {{/str}}</th>
+                <th scope="col">{{#str}} refreshed, local_microlearning {{/str}}</th>
+            </tr></thead>
+            <tbody>
+                {{#learners}}
+                <tr>
+                    <td class="ml-learnercell">{{{picture}}} <a href="{{url}}">{{name}}</a>{{#simulated}} <span class="badge bg-warning text-dark">{{#str}} population:simulated, local_microlearning {{/str}}</span>{{/simulated}}</td>
+                    <td class="ml-minibar-cell">
+                        <div class="ml-minibar" role="img" aria-label="{{levelsummary}}" title="{{levelsummary}}">
+                            {{#segments}}<span style="width: {{width}}%; background: {{color}}"></span>{{/segments}}
+                        </div>
+                        <div class="small ml-muted"><span class="ml-dot" style="background: #e34948"></span>{{weak}} <span class="ml-dot ms-2" style="background: #1c5cab"></span>{{strong}}</div>
+                    </td>
+                    <td>{{answered}}</td>
+                    <td class="ml-cellmeter-cell"><div class="ml-cellmeter">{{#hascorrect}}<div class="ml-meter-track"><div class="ml-meter-fill" style="width: {{correctwidth}}%"></div></div>{{/hascorrect}}<span>{{correct}}</span></div></td>
+                    <td>{{progress}}</td>
+                    <td>{{weakestskill}}</td>
+                    <td class="small">{{refreshed}}{{#pending}} <span class="badge bg-info text-dark">{{#str}} pendingbadge, local_microlearning {{/str}}</span>{{/pending}}</td>
+                </tr>
+                {{/learners}}
+            </tbody>
+        </table>
+        </div>
+        {{^learners}}<p>{{#str}} nolearnersfound, local_microlearning {{/str}}</p>{{/learners}}
+        <div class="d-flex flex-wrap justify-content-between align-items-center">
+            <span class="small ml-muted">{{rangetext}}</span>
+            {{{pagingbar}}}
+        </div>
+    </div></section>
+</div>

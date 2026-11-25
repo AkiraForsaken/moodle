@@ -1,0 +1,272 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+}}
+{{!
+    @template local_microlearning/profile
+
+    One learner's knowledge profile. Teachers and managers see any learner;
+    a learner sees only their own (self: no comparison with others, no evidence).
+
+    Example context (json):
+{
+    "self": false,
+    "teacher": true,
+    "hero": {
+        "picture": "",
+        "name": "Ada Learner",
+        "course": "English Microlearning",
+        "progress": 40,
+        "progressdeg": 144,
+        "chips": [],
+        "stats": []
+    },
+    "leveldoughnut": null,
+    "untried": 0,
+    "journey": [],
+    "levelguide": [],
+    "unitchart": null,
+    "levels": {
+        "segments": [],
+        "legend": [],
+        "total": 0,
+        "hastotal": false
+    },
+    "dimensionchart": null,
+    "heatmap": {
+        "columns": [],
+        "rows": []
+    },
+    "ramplegend": [],
+    "unittabs": [],
+    "unitname": "",
+    "topics": [],
+    "weak": [],
+    "estimates": [],
+    "strengths": [],
+    "quizchart": null,
+    "now": {
+        "items": [],
+        "hasitems": false,
+        "status": "",
+        "pending": null
+    },
+    "engagement": []
+}
+}}
+<div class="local_microlearning-profile">
+    {{#hero}}
+    <section class="ml-hero card mb-4">
+        <div class="ml-hero-band"></div>
+        <div class="card-body">
+            <div class="ml-hero-head">
+                <div class="ml-hero-avatar">{{{picture}}}</div>
+                <div class="ml-hero-title">
+                    <h3 class="mb-0">{{name}}</h3>
+                    <div class="ml-muted">{{course}}</div>
+                    <ul class="ml-chips" aria-label="{{#str}} knowledgeoverview, local_microlearning {{/str}}">
+                        {{#chips}}
+                        <li class="ml-chip" style="background: {{color}}; color: {{textcolor}}"><strong>{{count}}</strong> {{name}}</li>
+                        {{/chips}}
+                    </ul>
+                </div>
+                <div class="ml-ring" style="--ml-deg: {{progressdeg}}deg" role="img"
+                     aria-label="{{#str}} courseprogress, local_microlearning {{/str}}: {{progress}} %">
+                    <div class="ml-ring-inner"><span class="ml-ring-value">{{progress}}%</span>
+                        <span class="ml-ring-label">{{#str}} courseprogress, local_microlearning {{/str}}</span></div>
+                </div>
+            </div>
+            <div class="ml-stats">
+                {{#stats}}
+                <div class="ml-stat">
+                    <div class="ml-stat-icon">{{#pix}} {{icon}}, core {{/pix}}</div>
+                    <div>
+                        <div class="ml-stat-value">{{value}}</div>
+                        <div class="ml-stat-label">{{label}}</div>
+                        {{#detail}}<div class="ml-stat-detail">{{detail}}</div>{{/detail}}
+                    </div>
+                </div>
+                {{/stats}}
+            </div>
+        </div>
+    </section>
+    {{/hero}}
+
+    <details class="ml-guide card mb-4" open>
+        <summary class="card-body py-2"><strong>{{#str}} guide, local_microlearning {{/str}}</strong></summary>
+        <div class="card-body pt-0">
+            <ol class="mb-2">
+                {{#self}}
+                <li>{{#str}} guide1, local_microlearning {{/str}}</li>
+                <li>{{#str}} guide2, local_microlearning {{/str}}</li>
+                <li>{{#str}} guide3, local_microlearning {{/str}}</li>
+                {{/self}}
+                {{#teacher}}
+                <li>{{#str}} guide1teacher, local_microlearning {{/str}}</li>
+                <li>{{#str}} guide2teacher, local_microlearning {{/str}}</li>
+                <li>{{#str}} guide3teacher, local_microlearning {{/str}}</li>
+                {{/teacher}}
+            </ol>
+            <ul class="ml-levelguide">
+                {{#levelguide}}
+                <li><span class="ml-swatch ml-level-{{level}}" style="background: {{color}}"></span><strong>{{name}}</strong> <span class="ml-muted">{{desc}}</span></li>
+                {{/levelguide}}
+            </ul>
+        </div>
+    </details>
+
+    <div class="row g-4">
+        <div class="col-12">
+            <section class="card ml-card"><div class="card-body">
+                <h4 class="ml-card-title">{{#str}} journey, local_microlearning {{/str}}</h4>
+                <p class="ml-help">{{#str}} journey_help, local_microlearning {{/str}}</p>
+                <ul class="ml-journey">
+                    {{#journey}}
+                    <li class="{{^started}}ml-journey-ahead{{/started}}">
+                        <div class="ml-journey-name"><span class="ml-journey-num">{{number}}</span>{{name}}{{#complete}} <span class="ml-journey-done" aria-hidden="true">✓</span>{{/complete}}</div>
+                        <div class="ml-journey-bar" role="img" aria-label="{{figure}}. {{summary}}" title="{{summary}}">
+                            {{#segments}}<span style="width: {{width}}%; background: {{color}}"></span>{{/segments}}
+                        </div>
+                        <div class="ml-journey-figure">{{figure}}</div>
+                    </li>
+                    {{/journey}}
+                </ul>
+            </div></section>
+        </div>
+        <div class="col-lg-5">
+            <section class="card ml-card h-100">
+                <div class="card-body">
+                    <h4 class="ml-card-title">{{#str}} triedlevels, local_microlearning {{/str}}</h4>
+                    <p class="ml-help">{{#str}} triedlevels_help, local_microlearning, {{untried}} {{/str}}</p>
+                    {{#leveldoughnut}}{{{leveldoughnut}}}{{/leveldoughnut}}
+                    {{^leveldoughnut}}<p>{{#str}} triedlevels_none, local_microlearning {{/str}}</p>{{/leveldoughnut}}
+                </div>
+            </section>
+        </div>
+        <div class="col-lg-7">
+            <section class="card ml-card h-100">
+                <div class="card-body">
+                    <h4 class="ml-card-title">{{#str}} bydimension, local_microlearning {{/str}}</h4>
+                    <p class="ml-help">{{#self}}{{#str}} bydimension_self, local_microlearning {{/str}}{{/self}}{{#teacher}}{{#str}} bydimension_help, local_microlearning {{/str}}{{/teacher}}</p>
+                    {{#dimensionchart}}{{{dimensionchart}}}{{/dimensionchart}}
+                    {{^dimensionchart}}<p>{{#str}} noanswers, local_microlearning {{/str}}</p>{{/dimensionchart}}
+                </div>
+            </section>
+        </div>
+        {{#teacher}}
+        <div class="col-12">
+            <section class="card ml-card h-100">
+                <div class="card-body">
+                    <h4 class="ml-card-title">{{#str}} byunit, local_microlearning {{/str}}</h4>
+                    <p class="ml-help">{{#str}} byunit_help, local_microlearning {{/str}}</p>
+                    {{> local_microlearning/heatmap }}
+                </div>
+            </section>
+        </div>
+        {{/teacher}}
+
+        <div class="col-12">
+            <section class="card ml-card" id="topics">
+                <div class="card-body">
+                    <h4 class="ml-card-title">{{#str}} topics, local_microlearning {{/str}}</h4>
+                    <nav class="ml-unittabs" aria-label="{{#str}} units, local_microlearning {{/str}}">
+                        {{#unittabs}}
+                        <a href="{{url}}" class="{{#active}}active{{/active}}" {{#active}}aria-current="page"{{/active}} title="{{name}}">{{label}}</a>
+                        {{/unittabs}}
+                    </nav>
+                    <h5 class="ml-unitname">{{unitname}}</h5>
+                    <ul class="ml-meters">
+                        {{#topics}}
+                        {{> local_microlearning/topic_meter }}
+                        {{/topics}}
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-6">
+            <section class="card ml-card ml-accent-weak h-100">
+                <div class="card-body">
+                    <h4 class="ml-card-title">{{#str}} weaktopics, local_microlearning {{/str}}</h4>
+                    <p class="ml-help">{{#str}} weaktopics_help, local_microlearning {{/str}}</p>
+                    <ul class="ml-meters">
+                        {{#weak}}
+                        {{> local_microlearning/topic_meter }}
+                        {{/weak}}
+                    </ul>
+                    {{^weak}}<p>{{#str}} noweaktopics, local_microlearning {{/str}}</p>{{/weak}}
+                    {{#estimates.0}}
+                    <h5 class="ml-subhead">{{#str}} estimatedconcerns, local_microlearning {{/str}}</h5>
+                    <p class="ml-help">{{#str}} estimatedconcerns_help, local_microlearning {{/str}}</p>
+                    <ul class="ml-meters">
+                        {{#estimates}}
+                        {{> local_microlearning/topic_meter }}
+                        {{/estimates}}
+                    </ul>
+                    {{/estimates.0}}
+                </div>
+            </section>
+        </div>
+        <div class="col-lg-6">
+            <section class="card ml-card ml-accent-strong h-100">
+                <div class="card-body">
+                    <h4 class="ml-card-title">{{#str}} strengths, local_microlearning {{/str}}</h4>
+                    <ul class="ml-strengths">
+                        {{#strengths}}
+                        <li><span class="ml-swatch" style="background: #1c5cab"></span><span>{{name}}</span>
+                            <span class="ml-muted">{{unit}} · {{figure}}</span></li>
+                        {{/strengths}}
+                    </ul>
+                    {{^strengths}}<p>{{#str}} nostrengths, local_microlearning {{/str}}</p>{{/strengths}}
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-7">
+            <section class="card ml-card h-100">
+                <div class="card-body">
+                    <h4 class="ml-card-title">{{#str}} quizscores, local_microlearning {{/str}}</h4>
+                    {{#quizchart}}{{{quizchart}}}{{/quizchart}}
+                    {{^quizchart}}<p>{{#str}} noattempts, local_microlearning {{/str}}</p>{{/quizchart}}
+                </div>
+            </section>
+        </div>
+        <div class="col-lg-5">
+            <section class="card ml-card ml-accent-next h-100">
+                <div class="card-body">
+                    <h4 class="ml-card-title">{{#self}}{{#str}} recommendationsself, local_microlearning {{/str}}{{/self}}{{#teacher}}{{#str}} recommendationsnow, local_microlearning {{/str}}{{/teacher}}</h4>
+                    {{#teacher}}<p class="ml-help">{{now.status}}</p>{{/teacher}}
+                    {{#now.pending}}<p class="ml-pending">{{now.pending}}</p>{{/now.pending}}
+                    {{#now.hasitems}}
+                    <ol class="ml-recs">
+                        {{#now.items}}
+                        <li class="{{#main}}ml-rec-main{{/main}} {{#remediation}}ml-rec-remediation{{/remediation}}">
+                            {{#main}}<div class="ml-rec-kicker">{{#str}} upnext, local_microlearning {{/str}}</div>{{/main}}
+                            <a href="{{url}}" class="ml-rec-link"><img src="{{icon}}" alt="" class="icon" aria-hidden="true">{{{name}}}</a>
+                            <div class="ml-rec-reason">{{reason}}</div>
+                            <span class="badge {{#isestimate}}bg-warning text-dark{{/isestimate}}{{^isestimate}}bg-secondary{{/isestimate}}">{{basis}}</span>
+                            {{#evidence}}<div class="ml-muted small">{{evidence}}</div>{{/evidence}}
+                        </li>
+                        {{/now.items}}
+                    </ol>
+                    {{/now.hasitems}}
+                    {{^now.hasitems}}<p>{{#str}} coursecomplete, local_microlearning {{/str}}</p>{{/now.hasitems}}
+                </div>
+            </section>
+        </div>
+    </div>
+
+    {{#teacher}}
+    <details class="ml-section">
+        <summary><h4 class="d-inline">{{#str}} engagement, local_microlearning {{/str}}</h4></summary>
+        <p class="ml-help">{{#str}} engagement_help, local_microlearning {{/str}}</p>
+        <table class="generaltable w-auto">
+            {{#engagement}}<tr><th scope="row">{{label}}</th><td>{{value}}</td></tr>{{/engagement}}
+        </table>
+    </details>
+    {{/teacher}}
+</div>

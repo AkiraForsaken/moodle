@@ -1,0 +1,2598 @@
+{
+ "cases": [
+  {
+   "name": "nothing done: the head",
+   "queue": [
+    {
+     "cmid": 1,
+     "group": "remediation"
+    },
+    {
+     "cmid": 2,
+     "group": "remediation"
+    },
+    {
+     "cmid": 3,
+     "group": "prepare"
+    },
+    {
+     "cmid": 4,
+     "group": "forward"
+    },
+    {
+     "cmid": 5,
+     "group": "forward"
+    },
+    {
+     "cmid": 6,
+     "group": "forward"
+    }
+   ],
+   "done": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "active": [],
+   "expected": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  {
+   "name": "five remediation items keep one slot for the way forward",
+   "queue": [
+    {
+     "cmid": 1,
+     "group": "remediation"
+    },
+    {
+     "cmid": 2,
+     "group": "remediation"
+    },
+    {
+     "cmid": 3,
+     "group": "remediation"
+    },
+    {
+     "cmid": 4,
+     "group": "remediation"
+    },
+    {
+     "cmid": 5,
+     "group": "remediation"
+    },
+    {
+     "cmid": 6,
+     "group": "forward"
+    },
+    {
+     "cmid": 7,
+     "group": "forward"
+    }
+   ],
+   "done": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "active": [],
+   "expected": [
+    1,
+    2,
+    3,
+    6,
+    7
+   ]
+  },
+  {
+   "name": "everything done",
+   "queue": [
+    {
+     "cmid": 1,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    1
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "active": [],
+   "expected": []
+  },
+  {
+   "name": "only remediation left",
+   "queue": [
+    {
+     "cmid": 1,
+     "group": "remediation"
+    },
+    {
+     "cmid": 2,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    2
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "active": [],
+   "expected": [
+    1
+   ]
+  },
+  {
+   "name": "prepare never takes the last forward slot",
+   "queue": [
+    {
+     "cmid": 1,
+     "group": "prepare"
+    },
+    {
+     "cmid": 2,
+     "group": "prepare"
+    },
+    {
+     "cmid": 3,
+     "group": "forward"
+    }
+   ],
+   "done": [],
+   "top_n": 2,
+   "max_remediation": 3,
+   "active": [],
+   "expected": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "a branch stays hidden while its quiz is not failed",
+   "queue": [
+    {
+     "cmid": 1,
+     "group": "forward"
+    },
+    {
+     "cmid": 2,
+     "group": "forward"
+    },
+    {
+     "cmid": 11,
+     "group": "contingency",
+     "trigger": 2
+    },
+    {
+     "cmid": 12,
+     "group": "contingency",
+     "trigger": 2
+    },
+    {
+     "cmid": 2,
+     "group": "contingency",
+     "trigger": 2
+    }
+   ],
+   "done": [],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    1,
+    2
+   ]
+  },
+  {
+   "name": "a failed quiz: its lessons and the retry come first",
+   "queue": [
+    {
+     "cmid": 4,
+     "group": "forward"
+    },
+    {
+     "cmid": 5,
+     "group": "forward"
+    },
+    {
+     "cmid": 6,
+     "group": "forward"
+    },
+    {
+     "cmid": 1,
+     "group": "contingency",
+     "trigger": 3
+    },
+    {
+     "cmid": 2,
+     "group": "contingency",
+     "trigger": 3
+    },
+    {
+     "cmid": 3,
+     "group": "contingency",
+     "trigger": 3
+    }
+   ],
+   "done": [],
+   "active": [
+    3
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ]
+  },
+  {
+   "name": "the branch replaces the plain row of the same activity",
+   "queue": [
+    {
+     "cmid": 1,
+     "group": "forward"
+    },
+    {
+     "cmid": 3,
+     "group": "forward"
+    },
+    {
+     "cmid": 7,
+     "group": "forward"
+    },
+    {
+     "cmid": 1,
+     "group": "contingency",
+     "trigger": 3
+    },
+    {
+     "cmid": 3,
+     "group": "contingency",
+     "trigger": 3
+    }
+   ],
+   "done": [],
+   "active": [
+    3
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    1,
+    3,
+    7
+   ]
+  },
+  {
+   "name": "lessons reread after the fail: the retry is next",
+   "queue": [
+    {
+     "cmid": 4,
+     "group": "forward"
+    },
+    {
+     "cmid": 1,
+     "group": "contingency",
+     "trigger": 3
+    },
+    {
+     "cmid": 2,
+     "group": "contingency",
+     "trigger": 3
+    },
+    {
+     "cmid": 3,
+     "group": "contingency",
+     "trigger": 3
+    }
+   ],
+   "done": [
+    1,
+    2
+   ],
+   "active": [
+    3
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    3,
+    4
+   ]
+  },
+  {
+   "name": "two failed quizzes keep the remediation cap",
+   "queue": [
+    {
+     "cmid": 9,
+     "group": "forward"
+    },
+    {
+     "cmid": 1,
+     "group": "contingency",
+     "trigger": 3
+    },
+    {
+     "cmid": 2,
+     "group": "contingency",
+     "trigger": 3
+    },
+    {
+     "cmid": 3,
+     "group": "contingency",
+     "trigger": 3
+    },
+    {
+     "cmid": 4,
+     "group": "contingency",
+     "trigger": 6
+    },
+    {
+     "cmid": 5,
+     "group": "contingency",
+     "trigger": 6
+    },
+    {
+     "cmid": 6,
+     "group": "contingency",
+     "trigger": 6
+    }
+   ],
+   "done": [],
+   "active": [
+    3,
+    6
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    1,
+    2,
+    3,
+    9
+   ]
+  },
+  {
+   "name": "random 0",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "remediation"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "contingency",
+     "trigger": 102
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 102
+    },
+    {
+     "cmid": 102,
+     "group": "contingency",
+     "trigger": 102
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 100
+    }
+   ],
+   "done": [],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    105,
+    100,
+    101,
+    102,
+    103
+   ]
+  },
+  {
+   "name": "random 1",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "remediation"
+    },
+    {
+     "cmid": 104,
+     "group": "remediation"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "remediation"
+    }
+   ],
+   "done": [
+    100,
+    103,
+    104
+   ],
+   "active": [],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    106,
+    101,
+    102
+   ]
+  },
+  {
+   "name": "random 2",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "remediation"
+    },
+    {
+     "cmid": 104,
+     "group": "remediation"
+    },
+    {
+     "cmid": 105,
+     "group": "remediation"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "contingency",
+     "trigger": 101
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 101
+    },
+    {
+     "cmid": 101,
+     "group": "contingency",
+     "trigger": 101
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 105
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 105
+    },
+    {
+     "cmid": 101,
+     "group": "contingency",
+     "trigger": 105
+    },
+    {
+     "cmid": 105,
+     "group": "contingency",
+     "trigger": 105
+    }
+   ],
+   "done": [
+    104
+   ],
+   "active": [
+    101,
+    105
+   ],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    106,
+    101,
+    107
+   ]
+  },
+  {
+   "name": "random 3",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    }
+   ],
+   "done": [],
+   "active": [],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    100
+   ]
+  },
+  {
+   "name": "random 4",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 500,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 502,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 100
+    }
+   ],
+   "done": [
+    100,
+    500
+   ],
+   "active": [],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": []
+  },
+  {
+   "name": "random 5",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "remediation"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "remediation"
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 103
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 103
+    }
+   ],
+   "done": [
+    105
+   ],
+   "active": [
+    103
+   ],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    101
+   ]
+  },
+  {
+   "name": "random 6",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "remediation"
+    },
+    {
+     "cmid": 104,
+     "group": "remediation"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 100
+    }
+   ],
+   "done": [
+    100
+   ],
+   "active": [
+    100
+   ],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    102
+   ]
+  },
+  {
+   "name": "random 7",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 100
+    }
+   ],
+   "done": [
+    100
+   ],
+   "active": [
+    100
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    101,
+    102,
+    103
+   ]
+  },
+  {
+   "name": "random 8",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "prepare"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    100,
+    101,
+    102,
+    104,
+    105
+   ],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    103
+   ]
+  },
+  {
+   "name": "random 9",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 103
+    },
+    {
+     "cmid": 509,
+     "group": "contingency",
+     "trigger": 103
+    },
+    {
+     "cmid": 511,
+     "group": "contingency",
+     "trigger": 103
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 103
+    }
+   ],
+   "done": [],
+   "active": [
+    103
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    100,
+    509,
+    511,
+    101,
+    102
+   ]
+  },
+  {
+   "name": "random 10",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 513,
+     "group": "contingency",
+     "trigger": 104
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 104
+    }
+   ],
+   "done": [
+    101
+   ],
+   "active": [],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    100,
+    102,
+    103
+   ]
+  },
+  {
+   "name": "random 11",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "remediation"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "remediation"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "remediation"
+    }
+   ],
+   "done": [
+    104,
+    105
+   ],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    102,
+    103,
+    106,
+    100,
+    101
+   ]
+  },
+  {
+   "name": "random 12",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "prepare"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "forward"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 105
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 105
+    },
+    {
+     "cmid": 516,
+     "group": "contingency",
+     "trigger": 105
+    },
+    {
+     "cmid": 105,
+     "group": "contingency",
+     "trigger": 105
+    }
+   ],
+   "done": [
+    107
+   ],
+   "active": [
+    105
+   ],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    103
+   ]
+  },
+  {
+   "name": "random 13",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "prepare"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "prepare"
+    },
+    {
+     "cmid": 105,
+     "group": "remediation"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "remediation"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 110,
+     "group": "prepare"
+    },
+    {
+     "cmid": 111,
+     "group": "remediation"
+    },
+    {
+     "cmid": 504,
+     "group": "contingency",
+     "trigger": 101
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 101
+    },
+    {
+     "cmid": 101,
+     "group": "contingency",
+     "trigger": 101
+    }
+   ],
+   "done": [
+    100,
+    104,
+    105,
+    106,
+    107,
+    109,
+    110,
+    111,
+    504
+   ],
+   "active": [],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    103
+   ]
+  },
+  {
+   "name": "random 14",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "prepare"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "forward"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 110,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "contingency",
+     "trigger": 109
+    },
+    {
+     "cmid": 109,
+     "group": "contingency",
+     "trigger": 109
+    }
+   ],
+   "done": [
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108,
+    109,
+    110
+   ],
+   "active": [
+    109
+   ],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": []
+  },
+  {
+   "name": "random 15",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "remediation"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "remediation"
+    },
+    {
+     "cmid": 109,
+     "group": "remediation"
+    },
+    {
+     "cmid": 110,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "contingency",
+     "trigger": 103
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 103
+    }
+   ],
+   "done": [],
+   "active": [
+    103
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    102,
+    103,
+    104,
+    100,
+    101
+   ]
+  },
+  {
+   "name": "random 16",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    }
+   ],
+   "done": [],
+   "active": [],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    101,
+    100
+   ]
+  },
+  {
+   "name": "random 17",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "prepare"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 105
+    },
+    {
+     "cmid": 105,
+     "group": "contingency",
+     "trigger": 105
+    }
+   ],
+   "done": [],
+   "active": [
+    105
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    100,
+    105,
+    101,
+    102,
+    103
+   ]
+  },
+  {
+   "name": "random 18",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "prepare"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "remediation"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "remediation"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 110,
+     "group": "forward"
+    },
+    {
+     "cmid": 111,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    101,
+    105,
+    107,
+    108,
+    109,
+    110,
+    111
+   ],
+   "active": [],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    102
+   ]
+  },
+  {
+   "name": "random 19",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "remediation"
+    },
+    {
+     "cmid": 106,
+     "group": "remediation"
+    },
+    {
+     "cmid": 107,
+     "group": "prepare"
+    },
+    {
+     "cmid": 108,
+     "group": "forward"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 110,
+     "group": "forward"
+    },
+    {
+     "cmid": 111,
+     "group": "forward"
+    },
+    {
+     "cmid": 112,
+     "group": "prepare"
+    },
+    {
+     "cmid": 113,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    106
+   ],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    101,
+    102,
+    105,
+    107,
+    100
+   ]
+  },
+  {
+   "name": "random 20",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "prepare"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 103
+    },
+    {
+     "cmid": 101,
+     "group": "contingency",
+     "trigger": 103
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 103
+    }
+   ],
+   "done": [
+    101
+   ],
+   "active": [],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    102
+   ]
+  },
+  {
+   "name": "random 21",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "prepare"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 104
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 104
+    }
+   ],
+   "done": [
+    100,
+    102,
+    103,
+    104,
+    105,
+    106
+   ],
+   "active": [
+    104
+   ],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    101
+   ]
+  },
+  {
+   "name": "random 22",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "forward"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 110,
+     "group": "forward"
+    },
+    {
+     "cmid": 111,
+     "group": "forward"
+    },
+    {
+     "cmid": 112,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    102,
+    104,
+    108,
+    109,
+    110,
+    111,
+    112
+   ],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    100,
+    101,
+    103,
+    105,
+    106
+   ]
+  },
+  {
+   "name": "random 23",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "prepare"
+    },
+    {
+     "cmid": 104,
+     "group": "remediation"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "remediation"
+    },
+    {
+     "cmid": 505,
+     "group": "contingency",
+     "trigger": 101
+    },
+    {
+     "cmid": 102,
+     "group": "contingency",
+     "trigger": 101
+    },
+    {
+     "cmid": 101,
+     "group": "contingency",
+     "trigger": 101
+    }
+   ],
+   "done": [
+    100,
+    102,
+    103,
+    104,
+    106,
+    505
+   ],
+   "active": [
+    101
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    101,
+    105
+   ]
+  },
+  {
+   "name": "random 24",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    100,
+    101
+   ],
+   "active": [],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": []
+  },
+  {
+   "name": "random 25",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "prepare"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 104
+    },
+    {
+     "cmid": 101,
+     "group": "contingency",
+     "trigger": 104
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 104
+    }
+   ],
+   "done": [],
+   "active": [
+    104
+   ],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    100,
+    101,
+    103
+   ]
+  },
+  {
+   "name": "random 26",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    }
+   ],
+   "done": [
+    100
+   ],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    102,
+    101
+   ]
+  },
+  {
+   "name": "random 27",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "prepare"
+    },
+    {
+     "cmid": 101,
+     "group": "prepare"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "remediation"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    100,
+    102,
+    103,
+    104
+   ],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    101
+   ]
+  },
+  {
+   "name": "random 28",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "remediation"
+    }
+   ],
+   "done": [
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107,
+    108
+   ],
+   "active": [],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    100
+   ]
+  },
+  {
+   "name": "random 29",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    }
+   ],
+   "done": [],
+   "active": [],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    101,
+    102,
+    100
+   ]
+  },
+  {
+   "name": "random 30",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "remediation"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    101
+   ],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    100,
+    104,
+    102,
+    103,
+    105
+   ]
+  },
+  {
+   "name": "random 31",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "prepare"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "prepare"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "prepare"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "forward"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 110,
+     "group": "remediation"
+    },
+    {
+     "cmid": 107,
+     "group": "contingency",
+     "trigger": 109
+    },
+    {
+     "cmid": 102,
+     "group": "contingency",
+     "trigger": 109
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 109
+    },
+    {
+     "cmid": 109,
+     "group": "contingency",
+     "trigger": 109
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 108
+    },
+    {
+     "cmid": 108,
+     "group": "contingency",
+     "trigger": 108
+    }
+   ],
+   "done": [
+    100,
+    101,
+    102,
+    110
+   ],
+   "active": [
+    109
+   ],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    107,
+    103,
+    109,
+    105,
+    104
+   ]
+  },
+  {
+   "name": "random 32",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "remediation"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "prepare"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "prepare"
+    },
+    {
+     "cmid": 105,
+     "group": "remediation"
+    },
+    {
+     "cmid": 106,
+     "group": "prepare"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    102,
+    103,
+    106
+   ],
+   "active": [],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    100,
+    101,
+    107
+   ]
+  },
+  {
+   "name": "random 33",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "prepare"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "remediation"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "prepare"
+    },
+    {
+     "cmid": 106,
+     "group": "remediation"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "forward"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 110,
+     "group": "forward"
+    },
+    {
+     "cmid": 111,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    101,
+    104,
+    105,
+    106,
+    107,
+    109,
+    110,
+    111
+   ],
+   "active": [],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    103,
+    100,
+    102
+   ]
+  },
+  {
+   "name": "random 34",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 502,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 100
+    }
+   ],
+   "done": [
+    101,
+    102
+   ],
+   "active": [
+    100
+   ],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    502
+   ]
+  },
+  {
+   "name": "random 35",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 501,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 100
+    }
+   ],
+   "done": [
+    100,
+    501
+   ],
+   "active": [],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": []
+  },
+  {
+   "name": "random 36",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "remediation"
+    },
+    {
+     "cmid": 106,
+     "group": "remediation"
+    },
+    {
+     "cmid": 107,
+     "group": "prepare"
+    },
+    {
+     "cmid": 108,
+     "group": "forward"
+    },
+    {
+     "cmid": 109,
+     "group": "remediation"
+    },
+    {
+     "cmid": 110,
+     "group": "remediation"
+    }
+   ],
+   "done": [
+    100,
+    106,
+    107,
+    108
+   ],
+   "active": [],
+   "top_n": 1,
+   "max_remediation": 3,
+   "expected": [
+    103
+   ]
+  },
+  {
+   "name": "random 37",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "prepare"
+    },
+    {
+     "cmid": 101,
+     "group": "remediation"
+    },
+    {
+     "cmid": 102,
+     "group": "remediation"
+    },
+    {
+     "cmid": 103,
+     "group": "forward"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "forward"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "forward"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 110,
+     "group": "forward"
+    }
+   ],
+   "done": [
+    100,
+    101,
+    102,
+    103,
+    105,
+    106,
+    108,
+    109
+   ],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    104,
+    107,
+    110
+   ]
+  },
+  {
+   "name": "random 38",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "forward"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "remediation"
+    },
+    {
+     "cmid": 104,
+     "group": "prepare"
+    },
+    {
+     "cmid": 105,
+     "group": "prepare"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "forward"
+    },
+    {
+     "cmid": 108,
+     "group": "remediation"
+    },
+    {
+     "cmid": 109,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 104
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 104
+    },
+    {
+     "cmid": 101,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 104,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 103,
+     "group": "contingency",
+     "trigger": 100
+    },
+    {
+     "cmid": 100,
+     "group": "contingency",
+     "trigger": 100
+    }
+   ],
+   "done": [],
+   "active": [
+    104
+   ],
+   "top_n": 3,
+   "max_remediation": 3,
+   "expected": [
+    103,
+    104,
+    100
+   ]
+  },
+  {
+   "name": "random 39",
+   "queue": [
+    {
+     "cmid": 100,
+     "group": "prepare"
+    },
+    {
+     "cmid": 101,
+     "group": "forward"
+    },
+    {
+     "cmid": 102,
+     "group": "forward"
+    },
+    {
+     "cmid": 103,
+     "group": "prepare"
+    },
+    {
+     "cmid": 104,
+     "group": "forward"
+    },
+    {
+     "cmid": 105,
+     "group": "remediation"
+    },
+    {
+     "cmid": 106,
+     "group": "forward"
+    },
+    {
+     "cmid": 107,
+     "group": "remediation"
+    },
+    {
+     "cmid": 108,
+     "group": "forward"
+    },
+    {
+     "cmid": 109,
+     "group": "remediation"
+    },
+    {
+     "cmid": 110,
+     "group": "remediation"
+    },
+    {
+     "cmid": 111,
+     "group": "forward"
+    },
+    {
+     "cmid": 110,
+     "group": "contingency",
+     "trigger": 102
+    },
+    {
+     "cmid": 102,
+     "group": "contingency",
+     "trigger": 102
+    }
+   ],
+   "done": [],
+   "active": [],
+   "top_n": 5,
+   "max_remediation": 3,
+   "expected": [
+    105,
+    107,
+    109,
+    100,
+    101
+   ]
+  }
+ ]
+}

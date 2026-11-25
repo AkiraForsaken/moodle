@@ -1,0 +1,33 @@
+/* block_microlearning: the main recommendation stands out; the rest is a compact list.
+   Colour = activity type: Learn (lesson, page) blue #2a78d6, Check (quiz) green #008300
+   (categorical slots 1 and 6; validated with red: normal-vision ΔE >= 24, CVD 7.2 vs red, so every item also carries its text pill). Revision is not a type but a
+   state: a red marker (#e34948) and a red "Revision" pill on top of the type colour. */
+.block_microlearning { --ml-learn: #2a78d6; --ml-learn-dark: #104281; --ml-learn-bg: #eef5fd;
+    --ml-check: #008300; --ml-check-dark: #005c00; --ml-check-bg: #edf7ed; --ml-revise: #e34948; }
+.block_microlearning .ml-type-learn { --ml-type: var(--ml-learn); --ml-type-dark: var(--ml-learn-dark); --ml-type-bg: var(--ml-learn-bg); }
+.block_microlearning .ml-type-check { --ml-type: var(--ml-check); --ml-type-dark: var(--ml-check-dark); --ml-type-bg: var(--ml-check-bg); }
+
+.block_microlearning .ml-main { border: 2px solid var(--ml-type); border-radius: .75rem; padding: .75rem .85rem;
+    background: linear-gradient(180deg, var(--ml-type-bg) 0%, #ffffff 100%); box-shadow: 0 2px 6px rgba(11, 11, 11, .10);
+    margin-bottom: .9rem; }
+.block_microlearning .ml-main-remediation { border-left: 6px solid var(--ml-revise); }
+.block_microlearning .ml-main-kicker { display: flex; justify-content: space-between; align-items: center; gap: .3rem;
+    font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ml-type-dark);
+    margin-bottom: .3rem; }
+.block_microlearning .ml-pill { display: inline-block; border-radius: 999px; padding: .05rem .5rem; color: #fff;
+    font-size: .68rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+.block_microlearning .ml-pill-learn { background: var(--ml-learn); }
+.block_microlearning .ml-pill-check { background: var(--ml-check); }
+.block_microlearning .ml-pill-revise { background: var(--ml-revise); }
+.block_microlearning .ml-main-title { font-size: 1.05rem; font-weight: 700; text-decoration: none; color: var(--ml-type-dark); }
+.block_microlearning .ml-main-title .icon { width: 1.4rem; height: 1.4rem; }
+.block_microlearning .ml-main-reason { font-size: .875rem; margin-top: .25rem; }
+.block_microlearning .ml-btn-learn { background: var(--ml-learn); border-color: var(--ml-learn); color: #fff; }
+.block_microlearning .ml-btn-check { background: var(--ml-check); border-color: var(--ml-check); color: #fff; }
+.block_microlearning .ml-btn-learn:hover, .block_microlearning .ml-btn-check:hover { filter: brightness(.9); color: #fff; }
+.block_microlearning .ml-also { font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em;
+    color: #52514e; margin-bottom: .4rem; }
+.block_microlearning .ml-rest li { padding: .35rem 0 .35rem .6rem; border-left: 4px solid var(--ml-type); margin-bottom: .6rem; }
+.block_microlearning .ml-rest li.ml-rest-remediation { box-shadow: inset 3px 0 0 var(--ml-revise); }
+.block_microlearning .ml-rest a { font-weight: 600; font-size: .9rem; color: var(--ml-type-dark); }
+.block_microlearning .ml-rest-reason { color: #52514e; }

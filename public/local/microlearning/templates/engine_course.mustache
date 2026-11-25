@@ -1,0 +1,155 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+}}
+{{!
+    @template local_microlearning/engine_course
+
+    Engine dashboard, one course: readiness and estimator per population, last training
+    decision, actions, snapshots, jobs, pending refresh requests.
+
+    Example context (json):
+    {
+        "error": "", "hasstatus": true, "courseexists": true, "profilesurl": "#",
+        "populations": [{"name": "simulated", "ready": true, "phase": 2, "estimator": "BKT",
+            "phasetext": "Phase 2", "meters": [{"label": "Learners with answers", "value": "288",
+            "threshold": "100", "percent": 100, "met": true}]}],
+        "decision": {"decided": "22/11/26", "population": "simulated", "deepname": "AKT",
+            "deepauc": "0.6773", "bktauc": "0.6765", "difference": "0.0008", "margin": "0.01",
+            "targets": 2955, "testlearners": 58, "promoted": false, "reason": "", "chart": ""},
+        "snapshots": [{"id": 7, "active": true, "generated": "23/11/26", "imported": "23/11/26",
+            "cohort": "mixed", "version": "1.3.0"}],
+        "jobs": [], "hasjobs": false, "pending": [],
+        "actionurl": "#", "sesskey": "x", "canrebuild": true, "cantrain": true,
+        "trainingpopulation": "simulated", "trainblocked": [], "busy": false
+    }
+}}
+<div class="local_microlearning-profile local_microlearning-engine">
+    {{#error}}
+        <div class="alert alert-danger">{{#str}} engine:error, local_microlearning {{/str}} {{error}}</div>
+    {{/error}}
+    {{^courseexists}}
+        <div class="alert alert-warning">{{#str}} engine:coursedeletedhelp, local_microlearning {{/str}}</div>
+    {{/courseexists}}
+
+    <section class="card ml-card mt-3"><div class="card-body">
+        <h3 class="h5">{{#str}} engine:actions, local_microlearning {{/str}}</h3>
+        {{#busy}}<p class="ml-help">{{#str}} engine:busy, local_microlearning {{/str}}</p>{{/busy}}
+        <div class="d-flex flex-wrap gap-2 align-items-start">
+            <form method="post" action="{{actionurl}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="action" value="rebuild">
+                <button type="submit" class="btn btn-primary" {{^canrebuild}}disabled{{/canrebuild}}>{{#str}} engine:rebuild, local_microlearning {{/str}}</button>
+            </form>
+            <form method="post" action="{{actionurl}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="action" value="train">
+                <button type="submit" class="btn btn-secondary" {{^cantrain}}disabled{{/cantrain}}>{{#str}} engine:train, local_microlearning, {{trainingpopulation}} {{/str}}</button>
+            </form>
+            {{#courseexists}}<a class="btn btn-link" href="{{profilesurl}}">{{#str}} learnerprofiles, local_microlearning {{/str}}</a>{{/courseexists}}
+        </div>
+        <p class="ml-help mt-2 mb-0">{{#str}} engine:actionshelp, local_microlearning {{/str}}</p>
+        {{#trainblocked.0}}
+            <p class="mt-2 mb-1"><strong>{{#str}} engine:notready, local_microlearning {{/str}}</strong></p>
+            <ul class="mb-0">{{#trainblocked}}<li>{{reason}}</li>{{/trainblocked}}</ul>
+        {{/trainblocked.0}}
+    </div></section>
+
+    {{#hasstatus}}
+    <div class="row g-4 mt-1">
+        {{#populations}}
+        <div class="col-lg-6">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h3 class="h5">{{#str}} engine:populationtitle, local_microlearning, {{name}} {{/str}}
+                    {{#ready}}<span class="badge bg-success">{{#str}} engine:ready, local_microlearning {{/str}}</span>{{/ready}}
+                    {{^ready}}<span class="badge bg-secondary">{{#str}} engine:notreadyshort, local_microlearning {{/str}}</span>{{/ready}}
+                </h3>
+                <p><strong>{{#str}} engine:incharge, local_microlearning {{/str}}</strong> {{estimator}} &middot; Phase {{phase}}<br>
+                    <span class="ml-muted">{{phasetext}}</span></p>
+                {{#meters}}
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between small">
+                        <span>{{label}}</span>
+                        <span>{{value}} / {{threshold}}</span>
+                    </div>
+                    <div class="progress" role="progressbar" aria-label="{{label}}" aria-valuenow="{{percent}}" aria-valuemin="0" aria-valuemax="100" style="height: .6rem">
+                        <div class="progress-bar {{#met}}bg-success{{/met}}{{^met}}bg-warning{{/met}}" style="width: {{percent}}%"></div>
+                    </div>
+                </div>
+                {{/meters}}
+            </div></section>
+        </div>
+        {{/populations}}
+    </div>
+
+    <section class="card ml-card mt-4"><div class="card-body">
+        <h3 class="h5">{{#str}} engine:decisiontitle, local_microlearning {{/str}}</h3>
+        {{#decision}}
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <p class="ml-help">{{#str}} engine:decisionhelp, local_microlearning {{/str}}</p>
+                <table class="table table-sm">
+                    <tbody>
+                        <tr><th>{{#str}} engine:decided, local_microlearning {{/str}}</th><td>{{decided}}</td></tr>
+                        <tr><th>{{#str}} engine:trainedon, local_microlearning {{/str}}</th><td>{{population}}</td></tr>
+                        <tr><th>{{#str}} engine:heldout, local_microlearning {{/str}}</th><td>{{targets}} / {{testlearners}}</td></tr>
+                        <tr><th>{{deepname}} AUC</th><td>{{deepauc}}</td></tr>
+                        <tr><th>BKT AUC</th><td>{{bktauc}}</td></tr>
+                        <tr><th>{{#str}} engine:difference, local_microlearning {{/str}}</th><td>{{difference}} ({{#str}} engine:margin, local_microlearning, {{margin}} {{/str}})</td></tr>
+                        <tr><th>{{#str}} engine:outcome, local_microlearning {{/str}}</th><td>
+                            {{#promoted}}<span class="badge bg-success">{{#str}} engine:promoted, local_microlearning, {{deepname}} {{/str}}</span>{{/promoted}}
+                            {{^promoted}}<span class="badge bg-secondary">{{#str}} engine:bktkept, local_microlearning {{/str}}</span>{{/promoted}}
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-lg-6">{{{chart}}}</div>
+        </div>
+        {{/decision}}
+        {{^decision}}<p class="ml-muted">{{#str}} engine:notrained, local_microlearning {{/str}}</p>{{/decision}}
+    </div></section>
+    {{/hasstatus}}
+
+    <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h3 class="h5">{{#str}} engine:snapshotstitle, local_microlearning {{/str}}</h3>
+                <table class="table table-sm">
+                    <thead><tr>
+                        <th>#</th>
+                        <th>{{#str}} engine:generated, local_microlearning {{/str}}</th>
+                        <th>{{#str}} engine:imported, local_microlearning {{/str}}</th>
+                        <th>{{#str}} engine:cohort, local_microlearning {{/str}}</th>
+                    </tr></thead>
+                    <tbody>
+                    {{#snapshots}}
+                        <tr><td>{{id}} {{#active}}<span class="badge bg-success">{{#str}} active {{/str}}</span>{{/active}}</td>
+                            <td>{{generated}}</td><td>{{imported}}</td><td>{{cohort}}</td></tr>
+                    {{/snapshots}}
+                    {{^snapshots}}<tr><td colspan="4" class="ml-muted">{{#str}} engine:nosnapshots, local_microlearning {{/str}}</td></tr>{{/snapshots}}
+                    </tbody>
+                </table>
+            </div></section>
+        </div>
+        <div class="col-lg-6">
+            <section class="card ml-card h-100"><div class="card-body">
+                <h3 class="h5">{{#str}} engine:pendingtitle, local_microlearning {{/str}}</h3>
+                <table class="table table-sm">
+                    <tbody>
+                    {{#pending}}<tr><td>{{reason}}</td><td class="text-end">{{requests}}</td><td>{{oldest}}</td></tr>{{/pending}}
+                    {{^pending}}<tr><td class="ml-muted">{{#str}} engine:nopending, local_microlearning {{/str}}</td></tr>{{/pending}}
+                    </tbody>
+                </table>
+            </div></section>
+        </div>
+    </div>
+
+    <section class="card ml-card mt-4"><div class="card-body">
+        <h3 class="h5">{{#str}} engine:jobstitle, local_microlearning {{/str}}</h3>
+        {{> local_microlearning/engine_jobs }}
+    </div></section>
+</div>

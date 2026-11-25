@@ -1,0 +1,48 @@
+{{!
+    @template local_microlearning/levels
+
+    Topics per knowledge level as one segmented bar with a legend; counts are always printed.
+
+    Example context (json):
+{
+    "levels": {
+        "hastotal": true,
+        "total": 4,
+        "segments": [
+            {
+                "level": "strong",
+                "name": "Strong",
+                "color": "#1c5cab",
+                "count": 4,
+                "width": 100,
+                "showcount": true,
+                "textcolor": "#ffffff"
+            }
+        ],
+        "legend": [
+            {
+                "level": "strong",
+                "name": "Strong",
+                "color": "#1c5cab",
+                "count": 4
+            }
+        ]
+    }
+}
+}}
+{{#levels}}
+{{#hastotal}}
+<div class="ml-segbar" role="img" aria-label="{{#legend}}{{name}}: {{count}}. {{/legend}}">
+    {{#segments}}
+    <div class="ml-seg ml-level-{{level}}" style="flex: {{width}} 0 0; background: {{color}}; color: {{textcolor}}" title="{{name}}: {{count}}">
+        {{#showcount}}{{count}}{{/showcount}}
+    </div>
+    {{/segments}}
+</div>
+<ul class="ml-legend">
+    {{#legend}}
+    <li><span class="ml-swatch ml-level-{{level}}" style="background: {{color}}"></span>{{name}} <strong>{{count}}</strong></li>
+    {{/legend}}
+</ul>
+{{/hastotal}}
+{{/levels}}

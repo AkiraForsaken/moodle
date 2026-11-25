@@ -1,0 +1,89 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+}}
+{{!
+    @template block_microlearning/content
+
+    The student's recommended activities, each with its reason and basis.
+
+    The first recommendation is the main one ("Up next", highlighted card with a
+    button); the others follow as a compact list. Revision items carry a red marker.
+
+    Example context (json):
+    {
+        "main": {
+            "name": "Lesson: Frequency Adverb Word Order",
+            "url": "https://example.com/mod/page/view.php?id=1",
+            "icon": "https://example.com/theme/image.php/boost/page/1/monologo",
+            "reason": "You answered 2 of 5 questions on this topic correctly. Read this lesson again.",
+            "basis": "Based on your answers",
+            "isestimate": false,
+            "remediation": true,
+            "kindclass": "learn",
+            "kind": "Learn"
+        },
+        "hasitems": true,
+        "items": [
+            {
+                "name": "Check: Frequency Adverb Word Order",
+                "url": "https://example.com/mod/quiz/view.php?id=2",
+                "icon": "https://example.com/theme/image.php/boost/quiz/1/monologo",
+                "reason": "Once you have reread the lesson above, try the check again.",
+                "basis": "Based on your answers",
+                "isestimate": false,
+                "remediation": true,
+                "kindclass": "check",
+                "kind": "Check"
+            }
+        ],
+        "complete": false,
+        "updated": "Updated 16/11/26, 10:00",
+        "simulated": false
+    }
+}}
+<div class="block_microlearning">
+    {{#main}}
+    <div class="ml-main ml-type-{{kindclass}} {{#remediation}}ml-main-remediation{{/remediation}}">
+        <div class="ml-main-kicker"><span>{{#str}} upnext, block_microlearning {{/str}}</span>
+            <span>{{#remediation}}<span class="ml-pill ml-pill-revise">{{#str}} kind:revise, block_microlearning {{/str}}</span>{{/remediation}}
+            <span class="ml-pill ml-pill-{{kindclass}}">{{kind}}</span></span></div>
+        <a href="{{url}}" class="ml-main-title d-flex align-items-start">
+            <img src="{{icon}}" alt="" class="icon me-2" aria-hidden="true">
+            <span>{{{name}}}</span>
+        </a>
+        <div class="ml-main-reason">{{reason}}</div>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2">
+            <span class="badge {{#isestimate}}bg-warning text-dark{{/isestimate}}{{^isestimate}}bg-light text-dark{{/isestimate}}">{{basis}}</span>
+            <a href="{{url}}" class="btn btn-sm ml-btn-{{kindclass}}">{{#str}} start, block_microlearning {{/str}}</a>
+        </div>
+    </div>
+    {{/main}}
+    {{#hasitems}}
+    <div class="ml-also">{{#str}} alsorecommended, block_microlearning {{/str}}</div>
+    <ol class="list-unstyled mb-2 ml-rest">
+        {{#items}}
+        <li class="ml-type-{{kindclass}} {{#remediation}}ml-rest-remediation{{/remediation}}">
+            <div class="d-flex flex-wrap gap-1 mb-1">{{#remediation}}<span class="ml-pill ml-pill-revise">{{#str}} kind:revise, block_microlearning {{/str}}</span>{{/remediation}}<span class="ml-pill ml-pill-{{kindclass}}">{{kind}}</span></div>
+            <a href="{{url}}" class="d-flex align-items-start">
+                <img src="{{icon}}" alt="" class="icon me-2" aria-hidden="true">
+                <span>{{{name}}}</span>
+            </a>
+            <div class="small ml-rest-reason">{{reason}}</div>
+            <span class="badge {{#isestimate}}bg-warning text-dark{{/isestimate}}{{^isestimate}}bg-secondary{{/isestimate}}">{{basis}}</span>
+        </li>
+        {{/items}}
+    </ol>
+    {{/hasitems}}
+    {{#complete}}
+    <p>{{#str}} coursecomplete, block_microlearning {{/str}}</p>
+    {{/complete}}
+    <div class="small text-muted">{{updated}}</div>
+    {{#simulated}}
+    <div class="small text-muted">{{#str}} simulatednote, block_microlearning {{/str}}</div>
+    {{/simulated}}
+</div>
