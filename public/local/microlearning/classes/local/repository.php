@@ -379,4 +379,63 @@ class repository {
             'courseid = :courseid AND timeprocessed IS NULL', ['courseid' => $courseid]);
         return array_fill_keys(array_map('intval', $ids), true);
     }
+
+    /**
+     * Imported snapshots of a course, newest first (engine dashboard).
+     *
+     * @param int $courseid
+     * @param int $limit
+     * @return \stdClass[]
+     */
+    public static function snapshot_history(int $courseid, int $limit = 10): array {
+        global $DB;
+        return array_values($DB->get_records('local_microlearning_snapshot', ['courseid' => $courseid],
+            'timeimported DESC, id DESC',
+            'id, active, timegenerated, collectedat, cohort, recommenderversion, timeimported', 0, $limit));
+    }
+
+    /**
+     * Courses that have snapshot rows, with whether the course still exists.
+     *
+     * @return array courseid => \stdClass (courseid, fullname or null, snapshots, lastimport)
+     */
+    public static function snapshot_courses(): array {
+        global $DB;
+        $sql = "SELECT s.courseid, c.fullname, COUNT(s.id) AS snapshots, MAX(s.timeimported) AS lastimport
+                  FROM {local_microlearning_snapshot} s
+             LEFT JOIN {course} c ON c.id = s.courseid
+              GROUP BY s.courseid, c.fullname";
+        return $DB->get_records_sql($sql);
+    }
+
+    /**
+     * Refresh requests the engine has not answered, counted by reason, with the oldest one's time.
+     *
+     * @param int|null $courseid null for every course
+     * @return array reason => \stdClass (reason, requests, oldest)
+     */
+    public static function pending_refresh_summary(?int $courseid = null): array {
+        global $DB;
+        $where = 'timeprocessed IS NULL';
+        $params = [];
+        if ($courseid !== null) {
+            $where .= ' AND courseid = :courseid';
+            $params['courseid'] = $courseid;
+        }
+        return $DB->get_records_sql("SELECT reason, COUNT(id) AS requests, MIN(timecreated) AS oldest
+                                       FROM {local_microlearning_refresh}
+                                      WHERE {$where}
+                                   GROUP BY reason", $params);
+    }
+
+    /**
+     * Refresh tasks that have failed at least once and are waiting to be retried.
+     *
+     * @return int
+     */
+    public static function failing_refresh_tasks(): int {
+        global $DB;
+        return $DB->count_records_select('task_adhoc', 'classname = :classname AND faildelay > 0',
+            ['classname' => '\\local_microlearning\\task\\refresh_learner']);
+    }
 }

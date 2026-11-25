@@ -39,6 +39,16 @@ function local_microlearning_extend_navigation_course($navigation, $course, $con
         'local_microlearning',
         new pix_icon('i/report', '')
     );
+    if (has_capability('moodle/site:config', context_system::instance())) {
+        $navigation->add(
+            get_string('enginecoursenav', 'local_microlearning'),
+            new moodle_url('/local/microlearning/enginecourse.php', ['id' => $course->id]),
+            navigation_node::TYPE_SETTING,
+            null,
+            'local_microlearning_engine',
+            new pix_icon('i/settings', '')
+        );
+    }
 }
 
 /**

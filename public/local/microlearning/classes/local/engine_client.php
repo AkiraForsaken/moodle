@@ -76,6 +76,40 @@ class engine_client {
     }
 
     /**
+     * Recent engine jobs, newest first (engine dashboard).
+     *
+     * @param int|null $courseid only this course's jobs
+     * @param int $limit
+     * @return array ['jobs' => [...], 'active' => int]
+     */
+    public function jobs(?int $courseid = null, int $limit = 20): array {
+        $query = '?limit=' . $limit . ($courseid ? '&course_id=' . $courseid : '');
+        return $this->call('GET', '/v1/jobs' . $query);
+    }
+
+    /**
+     * A course's readiness for training per learner population and the recorded decision.
+     *
+     * @param int $courseid
+     * @return array
+     */
+    public function course_status(int $courseid): array {
+        return $this->call('GET', "/v1/courses/{$courseid}/status");
+    }
+
+    /**
+     * Start training the course's deep model; returns the queued job at once.
+     *
+     * The engine refuses (HTTP 409) when the course is not ready: training is never forced from Moodle.
+     *
+     * @param int $courseid
+     * @return array
+     */
+    public function start_training(int $courseid): array {
+        return $this->call('POST', "/v1/courses/{$courseid}/train");
+    }
+
+    /**
      * Download a bundle and import it into the course.
      *
      * @param int $courseid

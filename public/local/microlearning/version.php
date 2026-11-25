@@ -16,7 +16,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_microlearning';
-$plugin->version = 2026112200;
+$plugin->version = 2026112500;
 $plugin->requires = 2026041000; // Moodle 5.2.
 $plugin->maturity = MATURITY_ALPHA;
-$plugin->release = '0.4.0';
+$plugin->release = '0.5.0';

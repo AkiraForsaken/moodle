@@ -11,7 +11,10 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('local_microlearning', get_string('pluginname', 'local_microlearning'));
+    // One "Microlearning" category under Local plugins: the settings and the engine dashboard.
+    $ADMIN->add('localplugins', new admin_category('local_microlearning_category',
+        get_string('microlearningcategory', 'local_microlearning')));
+    $settings = new admin_settingpage('local_microlearning', get_string('settings', 'local_microlearning'));
     $settings->add(new admin_setting_configcheckbox('local_microlearning/refreshenabled',
         get_string('refreshenabled', 'local_microlearning'),
         get_string('refreshenabled_desc', 'local_microlearning'), 1));
@@ -28,5 +31,9 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('local_microlearning/enginetimeout',
         get_string('enginetimeout', 'local_microlearning'), get_string('enginetimeout_desc', 'local_microlearning'),
         300, PARAM_INT));
-    $ADMIN->add('localplugins', $settings);
+    $ADMIN->add('local_microlearning_category', $settings);
+    // Engine dashboard: engine status, jobs, refresh requests; per course readiness, training, rebuild.
+    $ADMIN->add('local_microlearning_category', new admin_externalpage('local_microlearning_engine',
+        get_string('enginedashboard', 'local_microlearning'),
+        new moodle_url('/local/microlearning/engine.php'), 'moodle/site:config'));
 }
